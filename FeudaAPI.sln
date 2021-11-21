@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeudaAPI", "FeudaAPI\FeudaAPI.csproj", "{921D48D2-24FD-4CCF-8360-501E237681B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{921D48D2-24FD-4CCF-8360-501E237681B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{921D48D2-24FD-4CCF-8360-501E237681B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{921D48D2-24FD-4CCF-8360-501E237681B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{921D48D2-24FD-4CCF-8360-501E237681B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BB92FA6-6738-4F16-A83D-50B63A061633}
+	EndGlobalSection
+EndGlobal
