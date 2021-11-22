@@ -1,14 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FeudaAPI
 {
@@ -24,7 +20,7 @@ namespace FeudaAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,14 +34,26 @@ namespace FeudaAPI
                 app.UseHsts();
             }
 
-            //Set up pipeline for API here
+            //Changes all HTTP requests into HTTPS requests
+            app.UseHttpsRedirection();
 
             //This serves a static file request from the wwwroot folder, or by default returns index.html.
-            app.UseStaticFiles();
+            app.UseFileServer();
 
-            app.Run(async (context) => {
-                await context.Response.WriteAsync("Hello there");
+            //Creates the correct routing paths for endpoints on the server
+            app.UseRouting();
+
+            //TODO: setup UseEndpoints for signalR hubs and Razor pages(api docs, info)
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                //Set up SignalR for API here
             });
+
+/*            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Hello there");
+            });*/
         }
     }
 }
