@@ -14,7 +14,10 @@ namespace FeudaAPI.Models
 
         public List<Player> connectedPlayers { get; }
 
-        List<Message> lobbyMessages = new();
+        public List<Message> lobbyMessages { get; } = new();
+
+        
+
         public Game Game { get; }
 
         public Lobby(string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
@@ -28,9 +31,12 @@ namespace FeudaAPI.Models
 
 
 
+        public void AddLobbyMessage(Message message)
+        {
+            lobbyMessages.Add(message);
+        }
 
-
-
+        #region Player
         public void AddPlayer(string connectionID, string playerName)
         {
             connectedPlayers.Add(new Player(connectionID, playerName));
@@ -51,5 +57,10 @@ namespace FeudaAPI.Models
             return false;
         }
 
+        public Player GetPlayerByConnectionID(string connectionID)
+        {
+            return connectedPlayers.Where(p => p.ConnectionID == connectionID).First();
+        }
+        #endregion
     }
 }

@@ -13,7 +13,10 @@ namespace FeudaAPI.Hubs
         Dictionary<string, Lobby> lobbyDict = new();
         List<string> lobbyNamesInUse = new();
 
-        //TODO: Setup task return types
+        #region Lobby
+
+
+        //TODO: Use the identifier received from the URL instead of the call
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
             //Check if lobby exists with the current name, if it does send conflict result
@@ -62,6 +65,7 @@ namespace FeudaAPI.Hubs
 
                     //Send update to clients
                     await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
+                    //Update messages for joined client
                     
                     return new OkResult();
                 }
@@ -81,5 +85,25 @@ namespace FeudaAPI.Hubs
                 await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
             }
         }
+        #endregion
+
+        #region messaging
+        public async void SendMessage(string lobbyIdentifier, string message) 
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            Message msg = new Message(lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName, message);
+            lobby.AddLobbyMessage(msg);
+            await Clients.Group(lobbyIdentifier).SendAsync("updateMessages", lobby.lobbyMessages);
+        }
+
+        
+        public async Task<List<Message>> GetMessages(string lobbyIdentifier)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            return await Task.Run(() => { return lobby.lobbyMessages; });
+        }
+
+        #endregion
+
     }
 }
