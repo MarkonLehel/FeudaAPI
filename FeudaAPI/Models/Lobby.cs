@@ -7,19 +7,6 @@ namespace FeudaAPI.Models
 {
     public class Lobby
     {
-
-        public string HostConnectionID { get; }
-        public string LobbyIdentifier { get; }
-        public string GameName { get; }
-
-        public List<Player> connectedPlayers { get; }
-
-        public List<Message> lobbyMessages { get; } = new();
-
-        
-
-        public Game Game { get; }
-
         public Lobby(string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
         {
             HostConnectionID = hostConnectionID;
@@ -28,7 +15,12 @@ namespace FeudaAPI.Models
             connectedPlayers.Add(new Player(hostConnectionID, hostName));
         }
 
-
+        public string HostConnectionID { get; }
+        public string LobbyIdentifier { get; }
+        public string GameName { get; }
+        public List<Player> connectedPlayers { get; }
+        public List<Message> lobbyMessages { get; } = new();
+        public Game Game { get; }
 
 
         public void AddLobbyMessage(Message message)

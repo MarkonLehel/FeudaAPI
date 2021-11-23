@@ -14,8 +14,6 @@ namespace FeudaAPI.Hubs
         List<string> lobbyNamesInUse = new();
 
         #region Lobby
-
-
         //TODO: Use the identifier received from the URL instead of the call
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
