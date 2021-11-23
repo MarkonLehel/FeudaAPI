@@ -1,3 +1,4 @@
+using FeudaAPI.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +40,7 @@ namespace FeudaAPI
             app.UseHttpsRedirection();
 
             //This serves a static file request from the wwwroot folder, or by default returns index.html.
-            app.UseFileServer();
+           // app.UseFileServer();
 
             //Creates the correct routing paths for endpoints on the server
             app.UseRouting();
@@ -48,13 +49,9 @@ namespace FeudaAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                //Set up SignalR for API here
+                endpoints.MapHub<TestHub>("/testhub");
             });
 
-/*            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello there");
-            });*/
         }
     }
 }
