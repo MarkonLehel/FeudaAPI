@@ -64,9 +64,10 @@ namespace FeudaAPI.Hubs
                     lobby.AddPlayer(Context.ConnectionId, playerName);
 
                     //Send update to clients
-                    await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
+                    SendUpdateLobbyPlayers(lobbyIdentifier);
+
                     //Update messages for joined client
-                    
+
                     return new OkResult();
                 }
                 return new ConflictResult();
@@ -76,7 +77,8 @@ namespace FeudaAPI.Hubs
 
         public async void DisconnectFromLobby(string lobbyIdentifier)
         {
-            if (lobbyDict.TryGetValue(lobbyIdentifier, out Lobby lobby)) { 
+            if (lobbyDict.TryGetValue(lobbyIdentifier, out Lobby lobby))
+            {
                 //Remove client from lobby
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyIdentifier);
                 lobby.RemovePlayer(Context.ConnectionId);
@@ -87,16 +89,16 @@ namespace FeudaAPI.Hubs
         }
         #endregion
 
-        #region messaging
-        public async void SendMessage(string lobbyIdentifier, string message) 
+        #region Messaging
+        public void SendMessage(string lobbyIdentifier, string message)
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Message msg = new Message(lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName, message);
             lobby.AddLobbyMessage(msg);
-            await Clients.Group(lobbyIdentifier).SendAsync("updateMessages", lobby.lobbyMessages);
+            SendUpdateLobbyPlayers(lobbyIdentifier);
         }
 
-        
+
         public async Task<List<Message>> GetMessages(string lobbyIdentifier)
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
@@ -105,5 +107,10 @@ namespace FeudaAPI.Hubs
 
         #endregion
 
+        private async void SendUpdateLobbyPlayers(string lobbyIdentifier)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
+        }
     }
 }
