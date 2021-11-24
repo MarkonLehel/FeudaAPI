@@ -49,7 +49,9 @@ namespace FeudaAPI.Models.Board
             int _currentMountains = 0;
             int _currentFields = 0;
 
-            GetTile(2, 2).TileType = TileType.Town;
+            Tile townTile = GetTile(2, 2);
+            townTile.TileType = TileType.Town;
+            townTile.BaseTileIncome = 0;
             List<TileType> validTiles = new() { TileType.Field, TileType.Mountain, TileType.Forest };
 
             for (int x = 0; x < 5; x++)

@@ -40,7 +40,7 @@ namespace FeudaAPI.Hubs
                 await Clients.Group(lobbyIdentifier).SendAsync("disconnectFromGame", "The host closed the lobby.");
 
                 //Remove all players from group, therefore deleting the entire group
-                List<Player> playerList = lobby.connectedPlayers;
+                List<Player> playerList = lobby.ConnectedPlayers;
                 foreach (Player player in playerList)
                 {
                     await Groups.RemoveFromGroupAsync(player.ConnectionID, lobbyIdentifier);
@@ -56,7 +56,7 @@ namespace FeudaAPI.Hubs
         {
             if (lobbyDict.TryGetValue(lobbyIdentifier, out Lobby lobby))
             {
-                if (!lobby.IsPlayerConnected(Context.ConnectionId))
+                if (!lobby.IsPlayerConnected(Context.ConnectionId) && !lobby.KicketClientIDs.Contains(Context.ConnectionId))
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
                     lobby.AddPlayer(Context.ConnectionId, playerName);
@@ -82,7 +82,20 @@ namespace FeudaAPI.Hubs
                 lobby.RemovePlayer(Context.ConnectionId);
 
                 //Update info on other clients
-                await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
+                await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.ConnectedPlayers);
+            }
+        }
+
+        public async void KickPlayerFromLobby(string lobbyIdentifier, string playerName)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            if (Context.ConnectionId == lobby.HostConnectionID)
+            {
+                string clientConnectionID = lobby.GetPlayerByName(playerName).ConnectionID;
+                await Clients.Client(clientConnectionID).SendAsync("disconnectFromGame", "You have been kicked by the host!");
+                await Groups.RemoveFromGroupAsync(clientConnectionID, lobbyIdentifier);
+                lobby.AddToKickList(clientConnectionID);
+                lobby.RemovePlayer(clientConnectionID);
             }
         }
         #endregion
@@ -100,7 +113,7 @@ namespace FeudaAPI.Hubs
         public async Task<List<Message>> GetMessages(string lobbyIdentifier)
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
-            return await Task.Run(() => { return lobby.lobbyMessages; });
+            return await Task.Run(() => { return lobby.LobbyMessages; });
         }
 
         #endregion
@@ -108,7 +121,7 @@ namespace FeudaAPI.Hubs
         private async void SendUpdateLobbyPlayers(string lobbyIdentifier)
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
-            await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.connectedPlayers);
+            await Clients.Group(lobbyIdentifier).SendAsync("updateLobbyPlayers", lobby.ConnectedPlayers);
         }
     }
 }

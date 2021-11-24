@@ -12,7 +12,7 @@ namespace FeudaAPI.Models
 
         public Coordinate Coordinate { get; }
         public TileType? TileType { get; set; } = null;
-        public int BaseTileIncome { get; } = 1;
+        public int BaseTileIncome { get; set; } = 1;
         public bool HasSerf { get; set; }
         public bool HasImprovement { get; set; }
 
