@@ -15,6 +15,8 @@ namespace FeudaAPI.Hubs
 
         #region Lobby
         //TODO: Use the identifier received from the URL instead of the call
+
+        //TODO: Add logging to the entire class
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
             //Check if lobby exists with the current name, if it does send conflict result
@@ -92,10 +94,13 @@ namespace FeudaAPI.Hubs
             if (Context.ConnectionId == lobby.HostConnectionID)
             {
                 string clientConnectionID = lobby.GetPlayerByName(playerName).ConnectionID;
+                //Remove the client from the group and the server
                 await Clients.Client(clientConnectionID).SendAsync("disconnectFromGame", "You have been kicked by the host!");
                 await Groups.RemoveFromGroupAsync(clientConnectionID, lobbyIdentifier);
+                //Blacklist the player
                 lobby.AddToKickList(clientConnectionID);
                 lobby.RemovePlayer(clientConnectionID);
+                SendUpdateLobbyPlayers(lobbyIdentifier);
             }
         }
         #endregion
@@ -115,6 +120,46 @@ namespace FeudaAPI.Hubs
             Lobby lobby = lobbyDict[lobbyIdentifier];
             return await Task.Run(() => { return lobby.LobbyMessages; });
         }
+
+        #endregion
+
+        #region Game
+        public async void InitGame()
+        {
+
+
+        }
+
+        private async void StartGame()
+        {
+
+        }
+
+
+        public async void MoveSerf()
+        {
+
+        }
+
+        public async void BuildBuilding()
+        {
+
+        }
+
+
+
+        private async void SendGameData()
+        {
+
+        }
+
+        private async void EndGame()
+        {
+
+        }
+
+
+
 
         #endregion
 
