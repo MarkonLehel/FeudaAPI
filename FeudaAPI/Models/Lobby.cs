@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FeudaAPI.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,27 +8,35 @@ namespace FeudaAPI.Models
 {
     public class Lobby
     {
-        public Lobby(string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
+        public Lobby(GameHub hub, string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
         {
+            gameHub = hub;
             HostConnectionID = hostConnectionID;
             LobbyIdentifier = lobbyIdentifier;
             GameName = gameName;
             ConnectedPlayers.Add(new Player(hostConnectionID, hostName));
         }
 
+        private GameHub gameHub;
         public string HostConnectionID { get; }
         public string LobbyIdentifier { get; }
         public string GameName { get; }
         public List<Player> ConnectedPlayers { get; }
         public List<Message> LobbyMessages { get; } = new();
+        public List<Message> GameMessages { get; set; }
         public List<string> KicketClientIDs { get; set; } = new();
         public Game Game { get; }
 
-
+        #region Messages
         public void AddLobbyMessage(Message message)
         {
             LobbyMessages.Add(message);
         }
+        public void AddGameMessage(Message message)
+        {
+            GameMessages.Add(message);
+        }
+        #endregion
 
         #region Player
         public void AddPlayer(string connectionID, string playerName)

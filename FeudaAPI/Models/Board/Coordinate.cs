@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeudaAPI.Models.Board
+namespace FeudaAPI.Models
 {
     public class Coordinate
     {

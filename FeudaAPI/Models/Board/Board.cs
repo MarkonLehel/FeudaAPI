@@ -1,10 +1,10 @@
-﻿using FeudaAPI.Models.Enums;
+﻿using FeudaAPI.Models.DataHolder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeudaAPI.Models.Board
+namespace FeudaAPI.Models
 {
     public class Board
     {
@@ -52,6 +52,8 @@ namespace FeudaAPI.Models.Board
             Tile townTile = GetTile(2, 2);
             townTile.TileType = TileType.Town;
             townTile.BaseTileIncome = 0;
+            townTile.HasBuilding = true;
+
             List<TileType> validTiles = new() { TileType.Field, TileType.Mountain, TileType.Forest };
 
             for (int x = 0; x < 5; x++)
