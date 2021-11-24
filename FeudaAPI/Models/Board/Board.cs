@@ -32,12 +32,12 @@ namespace FeudaAPI.Models
         }
 
 
-        private Tile GetTile(int x, int y)
+        public Tile GetTile(int x, int y)
         {
             return BoardTiles[y, x];
         }
 
-        private Tile GetTile(Coordinate cord)
+        public Tile GetTile(Coordinate cord)
         {
             return GetTile(cord.x, cord.y);
         }

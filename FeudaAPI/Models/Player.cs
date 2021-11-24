@@ -14,7 +14,7 @@ namespace FeudaAPI.Models
             PlayerBoard = new Board();
         }
 
-
+        public bool IsAlive { get; set; } = true;
         public int WoodCount { get; set; } = 80;
         public int FoodCount { get; set; } = 40;
         public int OreCount { get; set; } = 80;
