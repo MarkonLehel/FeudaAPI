@@ -9,7 +9,7 @@ namespace FeudaAPI.Models
     {
 
         private int _tick = 0;
-
+        public int CurrentSeason { get; set; }
         public int TurnCount { get; set; }
 
 

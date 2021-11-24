@@ -13,6 +13,7 @@ namespace FeudaAPI.Models.Board
             GenerateRandomBoard();
         }
 
+        private static Random _rand = new Random();
         private int _desiredForests = 6;
         private int _desiredMountains = 6;
         private int _desiredFields = 12;
@@ -41,18 +42,19 @@ namespace FeudaAPI.Models.Board
             return GetTile(cord.x, cord.y);
         }
 
-        //This can be done better
+        
         private void GenerateRandomBoard()
         {
             int _currentForests = 0;
             int _currentMountains = 0;
             int _currentFields = 0;
 
+            GetTile(2, 2).TileType = TileType.Town;
             List<TileType> validTiles = new() { TileType.Field, TileType.Mountain, TileType.Forest };
 
-            for (int y = 0; y < 5; y++)
+            for (int x = 0; x < 5; x++)
             {
-                for (int x = 0; x < 5; x++)
+                for (int y = 0; y < 5; y++)
                 {
 
                     if (_currentForests == _desiredForests && validTiles.Contains(TileType.Forest))
@@ -64,9 +66,14 @@ namespace FeudaAPI.Models.Board
 
                     bool _gotAvailableType = false;
 
+                    Tile tile = GetTile(x, y);
+
                     while (!_gotAvailableType)
                     {
-
+                        if (tile.TileType == null)
+                        {
+                            tile.TileType = validTiles[_rand.Next(validTiles.Count)];
+                        }
                     }
 
                 }
