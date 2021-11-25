@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,14 +15,22 @@ namespace FeudaAPI.Hubs
         Dictionary<string, Lobby> lobbyDict = GameService.lobbyDict;
         List<string> lobbyNamesInUse = GameService.lobbyNamesInUse;
 
+
+        public override async Task<IActionResult> OnConnectedAsync()
+        {
+            Debug.WriteLine("-----------------------------Client connection.");
+            return new OkResult();
+        }
+
         #region Lobby
         //TODO: Use the identifier received from the URL instead of passing it as first parameter to most functions
-        
+
         //TODO: In case of a lobby browser, implement OnConnectedAsync and OnDisconnectedAsync to send data to a lobby browser
         //TODO: Add logging to the entire class
 
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
+            Debug.WriteLine("-----------------------------Received a request to start the lobby");
             //Check if lobby exists with the current name, if it does send conflict result
             if (!lobbyNamesInUse.Contains(lobbyName))
             {

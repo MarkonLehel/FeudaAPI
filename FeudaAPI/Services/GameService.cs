@@ -23,20 +23,39 @@ namespace FeudaAPI.Services
         {
             _gameHub = hubcontext;
         }
-
+        private DateTime lastWrite = DateTime.UtcNow;
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                Debug.WriteLine("Running at " + DateTime.UtcNow);
 
-               
+                TimeSpan duration = lastWrite - DateTime.UtcNow;
+                if (duration.TotalSeconds < -1)
+                {
+                    lastWrite = DateTime.UtcNow;
+                    Debug.WriteLine("Running at " + DateTime.UtcNow + ", active lobbies:");
+
+                    if (lobbyDict.Count() > 0)
+                    {
+                        foreach (KeyValuePair<string, Lobby> kvp in lobbyDict)
+                        {
+                            Debug.WriteLine("Name: " + kvp.Value.GameName + " Key: " + kvp.Key);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No active lobbies.");
+                    }
+                }
 
 
-                //Game logic and process goes here
-                //Along with data sending it seems
 
+//Game logic and process goes here
+//Along with data sending it seems
+
+;
             }
+            return Task.Delay(Timeout.Infinite);
         }
     }
 }

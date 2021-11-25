@@ -66,7 +66,7 @@ namespace FeudaAPI
             {
                 endpoints.MapRazorPages().RequireCors(MyAllowSpecificOrigins);
                 endpoints.MapHub<TestHub>("/testhub").RequireCors(MyAllowSpecificOrigins);
-                endpoints.MapHub<GameHub>("/testhub").RequireCors(MyAllowSpecificOrigins);
+                endpoints.MapHub<GameHub>("/gamehub").RequireCors(MyAllowSpecificOrigins);
             });
             //Changes all outgoing HTTP requests into HTTPS requests
             app.UseHttpsRedirection();
