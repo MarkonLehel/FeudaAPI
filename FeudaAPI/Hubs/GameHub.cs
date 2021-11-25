@@ -88,7 +88,7 @@ namespace FeudaAPI.Hubs
                 lobby.RemovePlayer(Context.ConnectionId);
 
                 //Update info on other clients
-                await Clients.Group(lobbyIdentifier).updateLobbyPlayers(lobby.ConnectedPlayers);
+                await Clients.OthersInGroup(lobbyIdentifier).updateLobbyPlayers(lobby.ConnectedPlayers);
             }
         }
 
@@ -114,7 +114,7 @@ namespace FeudaAPI.Hubs
         #endregion
 
         #region Messaging
-        public void SendMessage(string lobbyIdentifier, string message)
+        public async Task<IActionResult> SendMessage(string lobbyIdentifier, string message)
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Message msg = new Message(lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName, message);
@@ -125,8 +125,8 @@ namespace FeudaAPI.Hubs
             {
                 lobby.AddGameMessage(msg);
             }
-                
-            Clients.Group(lobbyIdentifier).getNewMessage( msg);
+            await Clients.OthersInGroup(lobbyIdentifier).getNewMessage( msg);
+            return new OkResult();
         }
 
 
