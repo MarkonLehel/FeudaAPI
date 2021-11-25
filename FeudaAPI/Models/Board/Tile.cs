@@ -19,7 +19,7 @@ namespace FeudaAPI.Models
         public Building Building { get; set; } = null;
         public bool HasBuilding { get; set; } = false;
 
-        public Tile(Coordinate coordinate, TileType tileType)
+        public Tile(Coordinate coordinate, TileType? tileType)
         {
             Coordinate = coordinate;
             TileType = tileType;

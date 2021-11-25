@@ -51,8 +51,8 @@ namespace FeudaAPI.Models
             int _currentFields = 0;
 
             //Set up town tile
+            BoardTiles[2, 2] = new Tile(new Coordinate(2, 2), TileType.Town);
             Tile townTile = GetTile(2, 2);
-            townTile.TileType = TileType.Town;
             townTile.BaseTileIncome = 0;
             townTile.Building = Data.GetBuildingDataForType(BuildingType.Town);
             townTile.HasBuilding = true;
@@ -75,8 +75,9 @@ namespace FeudaAPI.Models
 
                     bool _gotAvailableType = false;
 
-                    Tile tile = GetTile(x, y);
-
+                    Tile tile = new Tile(new Coordinate(x, y), null);
+                    BoardTiles[y, x] = tile;
+                    
                     while (!_gotAvailableType)
                     {
                         if (tile.TileType == null)

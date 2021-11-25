@@ -24,11 +24,12 @@ namespace FeudaAPI.Services
             _gameHub = hubcontext;
         }
         private DateTime lastWrite = DateTime.UtcNow;
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Yield();
             while (!stoppingToken.IsCancellationRequested)
             {
-
                 TimeSpan duration = lastWrite - DateTime.UtcNow;
                 if (duration.TotalSeconds < -1)
                 {
@@ -47,15 +48,7 @@ namespace FeudaAPI.Services
                         Debug.WriteLine("No active lobbies.");
                     }
                 }
-
-
-
-//Game logic and process goes here
-//Along with data sending it seems
-
-;
             }
-            return Task.Delay(Timeout.Infinite);
         }
     }
 }
