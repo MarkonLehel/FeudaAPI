@@ -8,14 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using FeudaAPI.Models;
 
 namespace FeudaAPI.Services
 {
     public class GameService : BackgroundService
     {
-        private IHubContext<GameHub> _gameHub { get; set; }
 
-        public GameService(IHubContext<GameHub> hubcontext)
+        public static Dictionary<string, Lobby> lobbyDict = new();
+        public static List<string> lobbyNamesInUse = new();
+        private static IHubContext<GameHub, IGameHubClient> _gameHub { get; set; }
+
+        public GameService(IHubContext<GameHub, IGameHubClient> hubcontext)
         {
             _gameHub = hubcontext;
         }
@@ -25,6 +29,10 @@ namespace FeudaAPI.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 Debug.WriteLine("Running at " + DateTime.UtcNow);
+
+               
+
+
                 //Game logic and process goes here
                 //Along with data sending it seems
 

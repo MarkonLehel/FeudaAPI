@@ -10,8 +10,8 @@ namespace FeudaAPI.Hubs
     {
         Task disconnectFromGame(string message);
         Task updateLobbyPlayers(List<Player> playerList);
-
         Task getNewMessage(Message msg);
+        Task getTurnGameData(TurnDataObject turnData);
     }
     
 }
