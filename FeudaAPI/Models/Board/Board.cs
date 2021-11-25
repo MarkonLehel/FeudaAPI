@@ -13,11 +13,12 @@ namespace FeudaAPI.Models
             GenerateRandomBoard();
         }
 
-        private static Random _rand = new Random();
+        
         private int _desiredForests = 6;
         private int _desiredMountains = 6;
         private int _desiredFields = 12;
         public Tile[,] BoardTiles { get; } = new Tile[5, 5];
+        public List<Tile> TilesWithSerfs = new();
 
 
         public void MoveSerf(Coordinate from, Coordinate to)
@@ -49,11 +50,15 @@ namespace FeudaAPI.Models
             int _currentMountains = 0;
             int _currentFields = 0;
 
+            //Set up town tile
             Tile townTile = GetTile(2, 2);
             townTile.TileType = TileType.Town;
             townTile.BaseTileIncome = 0;
+            townTile.Building = Data.GetBuildingDataForType(BuildingType.Town);
             townTile.HasBuilding = true;
+            TilesWithSerfs.Add(townTile);
 
+            //Set up tile types
             List<TileType> validTiles = new() { TileType.Field, TileType.Mountain, TileType.Forest };
 
             for (int x = 0; x < 5; x++)
@@ -76,7 +81,7 @@ namespace FeudaAPI.Models
                     {
                         if (tile.TileType == null)
                         {
-                            tile.TileType = validTiles[_rand.Next(validTiles.Count)];
+                            tile.TileType = validTiles[Data.random.Next(validTiles.Count)];
                         }
                     }
 

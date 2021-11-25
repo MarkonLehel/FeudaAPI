@@ -15,6 +15,8 @@ namespace FeudaAPI.Models
         public int BaseTileIncome { get; set; } = 1;
         public bool HasSerf { get; set; } = false;
         public bool HasImprovement { get; set; } = false;
+
+        public Building Building { get; set; } = null;
         public bool HasBuilding { get; set; } = false;
 
         public Tile(Coordinate coordinate, TileType tileType)

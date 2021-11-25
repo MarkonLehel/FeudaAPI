@@ -44,24 +44,37 @@ namespace FeudaAPI.Models
             {
                 player.FoodCount = 0;
                 KillRandomSerf(player);
+                player.SerfCount--;
             } else if (player.SerfCount == 0) {
                 player.IsAlive = false;
             } else {
-
+                //Generate players data object
             }
             
-                
+            
         }
 
 
         private void KillRandomSerf(Player player)
         {
-            
+            Tile serfTile = player.PlayerBoard.TilesWithSerfs[DataHolder.Data.random.Next(player.PlayerBoard.TilesWithSerfs.Count)];
+            serfTile.HasSerf = false;
         }
 
         private void SpawnRandomSerf(Player player)
         {
-
+            List<Tile> validSpawns = new();
+            for (int x = 0; x < 5; x++)
+            {
+                for (int y = 0; y < 5; y++)
+                {
+                    Tile tile = player.PlayerBoard.GetTile(x, y);
+                    if (tile.Building.BuildingType == DataHolder.BuildingType.House ||
+                        tile.Building.BuildingType == DataHolder.BuildingType.Town)
+                        validSpawns.Add(tile);
+                }
+            }
+            validSpawns[DataHolder.Data.random.Next(validSpawns.Count)].HasSerf = true;
         }
 
         private void RefreshPlayerResources(Player player)

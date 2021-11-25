@@ -18,13 +18,16 @@ namespace FeudaAPI.Models.DataHolder
         House,
         Woodcutter,
         Mine,
-        Farm
+        Farm,
+        Town
     }
 
     
 
     public static class Data
     {
+        public static Random random = new Random();
+
         public static Dictionary<string, Building> BuildingTypeConv = new Dictionary<string, Building>()
         {
             {"house", GetBuildingDataForType(BuildingType.House) },
@@ -45,6 +48,7 @@ namespace FeudaAPI.Models.DataHolder
             new Building(BuildingType.Woodcutter, TileType.Forest, 30, 30, true),
             new Building(BuildingType.Mine, TileType.Mountain, 30, 30, true),
             new Building(BuildingType.Farm, TileType.Field, 30, 30, true),
+            new Building(BuildingType.Town, TileType.Field, 0, 0, false),
         };
 
     }
