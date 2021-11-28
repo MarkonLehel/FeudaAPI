@@ -30,6 +30,7 @@ namespace FeudaAPI
             services.AddCors();
             services.AddControllers().AddXmlSerializerFormatters();
             services.AddHostedService<GameService>();
+            //TODO: A singleton data storage class service needs to be added here
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

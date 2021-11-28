@@ -12,6 +12,7 @@ using FeudaAPI.Models;
 
 namespace FeudaAPI.Services
 {
+    //TODO: This needs a singleton data storage class service to create a connection with the hub
     public class GameService : BackgroundService
     {
 

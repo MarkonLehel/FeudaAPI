@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace FeudaAPI.Hubs
 {
+    //TODO: This needs a singleton data storage class service to create a connection with the bgservice
     public class GameHub : Hub<IGameHubClient>
     {
 
