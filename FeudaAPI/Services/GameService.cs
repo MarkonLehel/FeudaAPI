@@ -16,12 +16,12 @@ namespace FeudaAPI.Services
     public class GameService : BackgroundService
     {
 
-        public static Dictionary<string, Lobby> lobbyDict = new();
-        public static List<string> lobbyNamesInUse = new();
-        private static IHubContext<GameHub, IGameHubClient> _gameHub { get; set; }
+        private IHubContext<GameHub, IGameHubClient> _gameHub;
+        private GameDataService _gameDataService;
 
-        public GameService(IHubContext<GameHub, IGameHubClient> hubcontext)
+        public GameService(IHubContext<GameHub, IGameHubClient> hubcontext, GameDataService gameDataService)
         {
+            _gameDataService = gameDataService;
             _gameHub = hubcontext;
         }
         private DateTime lastWrite = DateTime.UtcNow;
@@ -37,9 +37,9 @@ namespace FeudaAPI.Services
                     lastWrite = DateTime.UtcNow;
                     Debug.WriteLine("Running at " + DateTime.UtcNow + ", active lobbies:");
 
-                    if (lobbyDict.Count() > 0)
+                    if (_gameDataService.lobbyDict.Count() > 0)
                     {
-                        foreach (KeyValuePair<string, Lobby> kvp in lobbyDict)
+                        foreach (KeyValuePair<string, Lobby> kvp in _gameDataService.lobbyDict)
                         {
                             Debug.WriteLine("Name: " + kvp.Value.GameName + " Key: " + kvp.Key);
                         }

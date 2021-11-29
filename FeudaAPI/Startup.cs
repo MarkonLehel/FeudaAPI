@@ -30,6 +30,7 @@ namespace FeudaAPI
             services.AddCors();
             services.AddControllers().AddXmlSerializerFormatters();
             services.AddHostedService<GameService>();
+            services.AddSingleton<GameDataService>();
             //TODO: A singleton data storage class service needs to be added here
         }
 

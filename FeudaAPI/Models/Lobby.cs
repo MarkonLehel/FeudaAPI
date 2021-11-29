@@ -8,16 +8,14 @@ namespace FeudaAPI.Models
 {
     public class Lobby
     {
-        public Lobby(GameHub hub, string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
+        public Lobby( string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
         {
-            gameHub = hub;
             HostConnectionID = hostConnectionID;
             LobbyIdentifier = lobbyIdentifier;
             GameName = gameName;
             ConnectedPlayers.Add(new Player(hostConnectionID, hostName));
         }
 
-        private GameHub gameHub;
         public string HostConnectionID { get; }
         public string LobbyIdentifier { get; }
         public string GameName { get; }
