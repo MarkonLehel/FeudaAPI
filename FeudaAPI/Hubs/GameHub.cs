@@ -34,7 +34,9 @@ namespace FeudaAPI.Hubs
             Debug.WriteLine("-----------------------------Received a request to start the lobby");
             try {
                 string lobbyIdentifier = _gameDataService.AddLobby(lobbyName, Context.ConnectionId, hostName);
+                Debug.WriteLine("A lobby was successfully created with the identifier of " + lobbyIdentifier);
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
+                Debug.WriteLine("Client was added to group.");
                 return new JsonResult(lobbyIdentifier);
             } catch { 
             return new ConflictResult();

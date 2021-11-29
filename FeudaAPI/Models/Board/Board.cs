@@ -1,6 +1,7 @@
 ﻿using FeudaAPI.Models.DataHolder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -80,9 +81,12 @@ namespace FeudaAPI.Models
                     
                     while (!_gotAvailableType)
                     {
+                        Debug.WriteLine("Stuck in the while loop ( ͡ʘ ͜ʖ ͡ʘ) data:" + tile.TileType +"  " + validTiles.Count);
+
                         if (tile.TileType == null)
                         {
                             tile.TileType = validTiles[Data.random.Next(validTiles.Count)];
+                            _gotAvailableType = true;
                         }
                     }
 

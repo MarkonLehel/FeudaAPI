@@ -28,6 +28,7 @@ namespace FeudaAPI.Services
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //Currently this is the line that makes this an async function, Task.Yield literally does only this.
             await Task.Yield();
             while (!stoppingToken.IsCancellationRequested)
             {
