@@ -1,9 +1,5 @@
-﻿using FeudaAPI.Hubs;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FeudaAPI.Models
 {
@@ -11,12 +7,10 @@ namespace FeudaAPI.Models
     {
         public Lobby( string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
         {
-            Debug.WriteLine("--Lobby constructor start");
             HostConnectionID = hostConnectionID;
             LobbyIdentifier = lobbyIdentifier;
             GameName = gameName;
             ConnectedPlayers.Add(new Player(hostConnectionID, hostName));
-            Debug.WriteLine("--Lobby constructor done");
         }
 
         public string HostConnectionID { get; }

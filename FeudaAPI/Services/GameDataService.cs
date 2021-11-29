@@ -1,9 +1,6 @@
 ﻿using FeudaAPI.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FeudaAPI.Services
 {
@@ -23,13 +20,11 @@ namespace FeudaAPI.Services
 
 
         public string AddLobby(string lobbyName, string hostConnectionID, string hostName) {
-            Debug.WriteLine("AddLobby has been called");
             if (!lobbyNamesInUse.Contains(lobbyName))
             {
                 string lobbyIdentifier = Guid.NewGuid().ToString();
 
                 lobbyDict.Add(lobbyIdentifier, new Lobby(hostConnectionID, lobbyIdentifier, lobbyName, hostName));
-                Debug.WriteLine("Lobby successfully added");
                 return lobbyIdentifier;
             } else {
                 throw new Exception("Lobby name already in use.");

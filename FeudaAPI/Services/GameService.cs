@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using FeudaAPI.Models;
 
 namespace FeudaAPI.Services
