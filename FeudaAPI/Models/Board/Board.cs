@@ -18,7 +18,7 @@ namespace FeudaAPI.Models
         public List<Tile> TilesWithSerfs = new();
 
 
-        public void MoveSerf(Coordinate from, Coordinate to)
+        public bool MoveSerf(Coordinate from, Coordinate to)
         {
             Tile fromTile = GetTile(from);
             Tile toTile = GetTile(to);
@@ -26,7 +26,9 @@ namespace FeudaAPI.Models
             {
                 fromTile.HasSerf = false;
                 toTile.HasSerf = true;
+                return true;
             }
+            return false;
         }
 
 

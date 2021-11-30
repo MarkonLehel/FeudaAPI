@@ -18,6 +18,5 @@
         public Board PlayerBoard { get; set; }
         public string ConnectionID { get; }
         public string PlayerName { get; }
-        
     }
 }

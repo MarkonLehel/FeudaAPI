@@ -18,7 +18,7 @@ namespace FeudaAPI.Models
         public string GameName { get; }
         public List<Player> ConnectedPlayers { get; } = new();
         public List<Message> LobbyMessages { get; } = new();
-        public List<Message> GameMessages { get; set; }
+        public List<Message> GameMessages { get; } = new();
         public List<string> KicketClientIDs { get; set; } = new();
         public Game Game { get; } = new Game();
 
@@ -64,10 +64,14 @@ namespace FeudaAPI.Models
         {
             return ConnectedPlayers.Where(p => p.ConnectionID == connectionID).First();
         }
-
         public Player GetPlayerByName(string name)
         {
             return ConnectedPlayers.Where(p => p.PlayerName == name).First();
+        }
+
+        public bool IsHost(string connectionID)
+        {
+            return HostConnectionID == connectionID;
         }
         #endregion
     }

@@ -12,6 +12,10 @@ namespace FeudaAPI.Hubs
         Task updateLobbyPlayers(List<Player> playerList);
         Task getNewMessage(Message msg);
         Task getTurnGameData(TurnDataObject turnData);
+
+        Task initGame();
+
+        Task endGame();
     }
     
 }

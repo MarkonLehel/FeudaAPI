@@ -26,7 +26,6 @@ namespace FeudaAPI.Hubs
         //TODO: Use the identifier received from the URL instead of passing it as first parameter to most functions
         //TODO: In case of a lobby browser, implement OnConnectedAsync and OnDisconnectedAsync to send data to a lobby browser
         //TODO: Add logging to the entire class
-        //TODO: Change void reutn types to Task
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
             Debug.WriteLine("-----------------------------Received a request to start the lobby");
@@ -45,7 +44,7 @@ namespace FeudaAPI.Hubs
         {
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
 
-            if (Context.ConnectionId == lobby.HostConnectionID && !lobby.Game.IsRunning) { 
+            if (lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning) { 
                 _gameDataService.RemoveLobby(lobbyIdentifier, Context.ConnectionId);
 
                 foreach (Player player in lobby.ConnectedPlayers)
@@ -55,10 +54,9 @@ namespace FeudaAPI.Hubs
 
                 return new OkResult();
             } else {
-                return new BadRequestResult();
+                return new UnauthorizedResult();
             } 
         }
-
 
         public async Task<IActionResult> ConnectToLobby(string lobbyIdentifier, string playerName)
         {
@@ -74,7 +72,7 @@ namespace FeudaAPI.Hubs
                     _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
 
                     //Send update to clients
-                    SendUpdateLobbyPlayers(lobbyIdentifier);
+                    await SendUpdateToLobbyPlayers(lobbyIdentifier);
 
                     return new OkResult();
                 }
@@ -97,10 +95,10 @@ namespace FeudaAPI.Hubs
             }
         }
 
-        public async void KickPlayerFromLobby(string lobbyIdentifier, string playerName)
+        public async Task<IActionResult> KickPlayerFromLobby(string lobbyIdentifier, string playerName)
         {
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
-            if (Context.ConnectionId == lobby.HostConnectionID && !lobby.Game.IsRunning)
+            if (lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning)
             {
                 string clientConnectionID = lobby.GetPlayerByName(playerName).ConnectionID;
 
@@ -112,8 +110,10 @@ namespace FeudaAPI.Hubs
                 _gameDataService.KickPlayerFromLobby(lobbyIdentifier, playerName);
 
                 //Update data on other clients
-                SendUpdateLobbyPlayers(lobbyIdentifier);
+                await SendUpdateToLobbyPlayers(lobbyIdentifier);
+                return new OkResult();
             }
+            return new UnauthorizedResult();
         }
         #endregion
 
@@ -134,46 +134,34 @@ namespace FeudaAPI.Hubs
         #endregion
 
         #region Game
-        public async void InitGame()
+        public async Task InitGame(string lobbyIdentifier)
         {
-
+            Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
+            if (lobby != null && lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning)
+            {
+                _gameDataService.StartGame(lobbyIdentifier);
+                await Clients.Group(lobbyIdentifier).initGame();
+            }
 
         }
 
-        private async void RunGame(string lobbyIdentifier)
+        public async Task<IActionResult> MoveSerf(string lobbyIdentifier, int fromX, int fromY, int toX, int toY)
         {
-
+            await Task.Yield();
+            bool success = _gameDataService.MoveSerf(lobbyIdentifier, Context.ConnectionId, new Coordinate(fromX, fromY), new Coordinate(toX, toY));
+            return success ? new OkResult() : new ConflictResult();
         }
 
-
-        public async void MoveSerf()
+        public async Task<IActionResult> BuildBuilding(string lobbyIdentifier, string building, int cordX, int cordY)
         {
-
+            await Task.Yield();
+            bool success = _gameDataService.BuildBuilding(lobbyIdentifier, Context.ConnectionId, building, new Coordinate(cordX, cordY));
+            return success ? new OkResult() : new ConflictResult();
         }
-
-        public async void BuildBuilding()
-        {
-
-        }
-
-
-
-        private async void SendTurnUpdateGameData()
-        {
-
-        }
-
-        private async void EndGame()
-        {
-
-        }
-
-
-
 
         #endregion
 
-        private async void SendUpdateLobbyPlayers(string lobbyIdentifier)
+        private async Task SendUpdateToLobbyPlayers(string lobbyIdentifier)
         {
             await Clients.Group(lobbyIdentifier).updateLobbyPlayers(_gameDataService.GetLobby(lobbyIdentifier).ConnectedPlayers);
         }

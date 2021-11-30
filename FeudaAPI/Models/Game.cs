@@ -22,7 +22,7 @@ namespace FeudaAPI.Models
 
         }
 
-        public void BuildBuilding(Player player, Building building, Coordinate pos)
+        public bool BuildBuilding(Player player, Building building, Coordinate pos)
         {
             Tile tile = player.PlayerBoard.GetTile(pos);
             if (player.OreCount >= building.OrePrice && player.WoodCount >= building.WoodPrice && !tile.HasBuilding)
@@ -33,12 +33,14 @@ namespace FeudaAPI.Models
                 tile.HasBuilding = true;
                 if (building.BuildingType == DataHolder.BuildingType.House)
                     SpawnRandomSerf(player);
+                return true;
             }
+            return false;
         }
 
-        public void CalculateTurnForPlayer(Player player)
+        public TurnDataObject CalculateTurnForPlayer(Player player)
         {
-            RefreshPlayerResources(player);
+            CalculatePlayerResources(player);
 
             if(player.SerfCount > 0 && player.FoodCount < 0)
             {
@@ -47,11 +49,10 @@ namespace FeudaAPI.Models
                 player.SerfCount--;
             } else if (player.SerfCount == 0) {
                 player.IsAlive = false;
-            } else {
-                //Generate players data object
             }
-            
-            
+
+            return new TurnDataObject();
+
         }
 
 
@@ -77,7 +78,7 @@ namespace FeudaAPI.Models
             validSpawns[DataHolder.Data.random.Next(validSpawns.Count)].HasSerf = true;
         }
 
-        private void RefreshPlayerResources(Player player)
+        private void CalculatePlayerResources(Player player)
         {
             int _woodIncome = 0;
             int _foodIncome = player.SerfCount * -1;

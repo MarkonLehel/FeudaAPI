@@ -7,18 +7,15 @@ namespace FeudaAPI.Services
     public class GameDataService
     {
         public List<Lobby> activeGames { get; } = new();
-
         public Dictionary<string, Lobby> lobbyDict { get; } = new();
         public List<string> lobbyNamesInUse { get; } = new();
 
-
+        #region Lobby
         public Lobby GetLobby(string lobbyIdentifier)
         {
             lobbyDict.TryGetValue(lobbyIdentifier, out Lobby lobby);
             return lobby;
         }
-
-
         public string AddLobby(string lobbyName, string hostConnectionID, string hostName) {
             if (!lobbyNamesInUse.Contains(lobbyName))
             {
@@ -35,8 +32,6 @@ namespace FeudaAPI.Services
             lobbyDict.Remove(lobbyIdentifier);
             lobbyNamesInUse.Remove(lobby.GameName);
         }
-
-
         public void AddPlayerToLobby(string lobbyIdentifier, string connectionID, string playerName) {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             lobby.AddPlayer(connectionID, playerName);
@@ -45,18 +40,15 @@ namespace FeudaAPI.Services
         {
             lobbyDict[lobbyIdentifier].RemovePlayer(connectionID);
         }
-
         public void KickPlayerFromLobby(string lobbyIdentifier, string playerName) {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Player player = lobby.GetPlayerByName(playerName);
             RemovePlayerFromLobby(lobbyIdentifier, player.ConnectionID);
             lobby.AddToKickList(player.ConnectionID);
         }
-        public void StartGame(string lobbyIdentifier, string hostConnectionID) {
-            Lobby lobby = lobbyDict[lobbyIdentifier];
-            lobby.Game.IsRunning = true;
-            activeGames.Add(lobby);
-            }
+        #endregion
+
+        #region Messaging
         public Message AddMessageToLobby(string lobbyIdentifier, string connectionID, string message) {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Message msg = new Message(lobby.GetPlayerByConnectionID(connectionID).PlayerName, message);
@@ -81,6 +73,30 @@ namespace FeudaAPI.Services
                 return lobby.GameMessages;
             }
         }
+        #endregion
+
+        #region Game
+        public void StartGame(string lobbyIdentifier)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            lobby.Game.IsRunning = true;
+            activeGames.Add(lobby);
+        }
+
+        public bool BuildBuilding(string lobbyIdentifier, string clientID, string building, Coordinate cords)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            Player player = lobby.GetPlayerByConnectionID(clientID);
+            return lobby.Game.BuildBuilding(player, Models.DataHolder.Data.BuildingTypeConv[building], cords);
+        }
+
+        public bool MoveSerf(string lobbyIdentifier, string clientID, Coordinate from, Coordinate to)
+        {
+            Lobby lobby = lobbyDict[lobbyIdentifier];
+            Player player = lobby.GetPlayerByConnectionID(clientID);
+            return player.PlayerBoard.MoveSerf(from, to);
+        }
+        #endregion
     }
 
 }
