@@ -1,5 +1,6 @@
 ﻿using FeudaAPI.GameEvents;
 using FeudaAPI.Models.Data;
+using FeudaAPI.Models.GameEvents;
 using System;
 using System.Collections.Generic;
 
@@ -7,18 +8,19 @@ namespace FeudaAPI.Models
 {
     public class Game
     {
-
-
-
         public bool IsRunning { get; set; } = false;
         
         public Seasons CurrentSeason { get; set; } = Seasons.Summer;
         private SeasonData CurrentSeasonData { get; set; } = Data.Data.SeasonTypeConv[Seasons.Summer];
         public int TurnCount { get; set; } = 1;
 
-        public List<GenericEvent> upcomingGameEvents { get; } = new();
-        public List<GenericEvent> activeGameEvents { get; } = new();
+        public List<GameEvent> upcomingGameEvents { get; } = new();
+        public List<GameEvent> activeGameEvents { get; } = new();
 
+        public Game()
+        {
+            AddGameEvent(new SeasonChangeEvent(this));
+        }
 
         public Dictionary<string, TurnDataObject> CalculateTurn(List<Player> playerList)
         {
@@ -32,6 +34,7 @@ namespace FeudaAPI.Models
             return dataDict;
         }
 
+        //TODO: If player has high enough resource income for 3 turns respawn serfs that died
         public TurnDataObject CalculateTurnForPlayer(Player player)
         {
 
@@ -68,7 +71,7 @@ namespace FeudaAPI.Models
         #endregion
         
         #region Callable events
-        private void ChangeToNextSeason() {
+        public void ChangeToNextSeason() {
             int seasonIndex = (int)CurrentSeason;
 
 
@@ -81,13 +84,16 @@ namespace FeudaAPI.Models
             }
             CurrentSeasonData = Data.Data.SeasonTypeConv[CurrentSeason];
         }
+        public void AddGameEvent(GameEvent ev){
+            upcomingGameEvents.Add(ev);
+        }
         #endregion
 
         private void AdvanceEvents()
         {
             if (upcomingGameEvents.Count > 0)
             {
-                foreach (GenericEvent ev in upcomingGameEvents)
+                foreach (GameEvent ev in upcomingGameEvents)
                 {
                     if (ev.takesEffectInTurns == 0)
                     {
@@ -104,7 +110,7 @@ namespace FeudaAPI.Models
 
             if (activeGameEvents.Count > 0) 
             { 
-                foreach (GenericEvent ev in activeGameEvents)
+                foreach (GameEvent ev in activeGameEvents)
                 {
                     if (ev.turnsAffected == 0)
                     {

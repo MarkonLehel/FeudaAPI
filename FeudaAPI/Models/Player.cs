@@ -1,4 +1,5 @@
 ﻿using FeudaAPI.GameEvents;
+using FeudaAPI.Models.GameEvents;
 using System.Collections.Generic;
 
 namespace FeudaAPI.Models
@@ -28,8 +29,8 @@ namespace FeudaAPI.Models
         public string ConnectionID { get; }
         public string PlayerName { get; }
 
-        public List<GenericEvent> upcomingPlayerEvents { get; } = new();
-        public List<GenericEvent> activePlayerEvents { get; } = new();
+        public List<PlayerEvent> upcomingPlayerEvents { get; } = new();
+        public List<PlayerEvent> activePlayerEvents { get; } = new();
         public int incomingEventAwareness { get; set; } = 20;
         public int currentScore { get; set; }
 
@@ -37,7 +38,7 @@ namespace FeudaAPI.Models
         {
             if (activePlayerEvents.Count > 0)
             {
-                foreach (GenericEvent ev in upcomingPlayerEvents)
+                foreach (PlayerEvent ev in upcomingPlayerEvents)
                 {
                     if (ev.takesEffectInTurns == 0)
                     {
@@ -53,7 +54,7 @@ namespace FeudaAPI.Models
             }
 
             if (activePlayerEvents.Count > 0) { 
-                foreach (GenericEvent ev in activePlayerEvents)
+                foreach (PlayerEvent ev in activePlayerEvents)
                 {
                     if (ev.turnsAffected == 0)
                     {
