@@ -21,10 +21,10 @@ namespace FeudaAPI.Models
         private List<GameEvent> activeGameEvents = new();
 
 
-        public void CalculateTurn()
+        public Dictionary<string, TurnDataObject> CalculateTurn(List<Player> playerList)
         {
             TurnCount++;
-            AdvanceGameEvents();
+            AdvanceEvents();
             
 
             
@@ -49,6 +49,7 @@ namespace FeudaAPI.Models
         //Implement season data into the calculation
         public TurnDataObject CalculateTurnForPlayer(Player player)
         {
+
             CalculatePlayerResources(player);
 
             if(player.SerfCount > 0 && player.FoodCount < 0)
@@ -78,33 +79,39 @@ namespace FeudaAPI.Models
             CurrentSeasonData = Data.SeasonTypeConv[CurrentSeason];
         }
 
-        private void AdvanceGameEvents()
+        private void AdvanceEvents()
         {
-            foreach (GameEvent ev in activeGameEvents)
+            if (upcomingGameEvents.Count > 0)
             {
-                if (ev.turnsAffected == 0)
+                foreach (GameEvent ev in upcomingGameEvents)
                 {
-                    activeGameEvents.Remove(ev);
-                }
-                else
-                {
-                    ev.TriggerEffectsPerTurn();
-                    ev.turnsAffected--;
+                    if (ev.takesEffectInTurns == 0)
+                    {
+                        ev.TriggerEffectsOnStart();
+                        activeGameEvents.Add(ev);
+                        upcomingGameEvents.Remove(ev);
+                    }
+                    else
+                    {
+                        ev.takesEffectInTurns--;
+                    }
                 }
             }
 
-            foreach (GameEvent ev in upcomingGameEvents)
-            {
-                if (ev.takesEffectInTurns == 0)
+            if (activeGameEvents.Count > 0) 
+            { 
+                foreach (GameEvent ev in activeGameEvents)
                 {
-                    ev.TriggerEffectsOnStart();
-                    activeGameEvents.Add(ev);
-                }
-                else
-                {
-                    ev.takesEffectInTurns--;
+                    if (ev.turnsAffected == 0)
+                    {
+                        activeGameEvents.Remove(ev);
+                    } else {
+                        ev.TriggerEffectsPerTurn();
+                        ev.turnsAffected--;
+                    }
                 }
             }
+            
         }
         private void KillRandomSerf(Player player)
         {
@@ -120,8 +127,8 @@ namespace FeudaAPI.Models
                 for (int y = 0; y < 5; y++)
                 {
                     Tile tile = player.PlayerBoard.GetTile(x, y);
-                    if (tile.Building.BuildingType == DataHolder.BuildingType.House ||
-                        tile.Building.BuildingType == DataHolder.BuildingType.Town)
+                    if (tile.Building.BuildingType == BuildingType.House ||
+                        tile.Building.BuildingType == BuildingType.Town)
                         validSpawns.Add(tile);
                 }
             }
@@ -167,17 +174,25 @@ namespace FeudaAPI.Models
             }
 
             //Apply GameEventModifiers for resources
-            if(activeGameEvents.Count > 0) {
-                foreach (GameEvent ev in activeGameEvents)
+            List<GameEvent> totalActiveEventsForPlayer = new();
+            totalActiveEventsForPlayer.AddRange(activeGameEvents);
+            totalActiveEventsForPlayer.AddRange(player.activePlayerEvents);
+            if (activeGameEvents.Count > 0) {
+                foreach (GameEvent ev in totalActiveEventsForPlayer)
                 {
                     _foodIncome = ev.EffectFoodIncome(_foodIncome);
                     _woodIncome = ev.EffectWoodIncome(_woodIncome);
                     _oreIncome = ev.EffectOreIncome(_oreIncome);
                 }
-            } 
-                player.FoodCount += _foodIncome;
-                player.WoodCount += _woodIncome;
-                player.OreCount += _oreIncome;
+            }
+
+            player.FoodIncomeLastTurn = _foodIncome;
+            player.WoodIncomeLastTurn = _woodIncome;
+            player.OreIncomeLastTurn = _oreIncome;
+
+            player.FoodCount += _foodIncome;
+            player.WoodCount += _woodIncome;
+            player.OreCount += _oreIncome;
         }
 
         private int CalculateResourceIncome(Tile tile, int additionalModifier, int? directModifier)
@@ -187,8 +202,7 @@ namespace FeudaAPI.Models
             {
                 value += tile.HasImprovement ? (tile.BaseTileIncome * 2) : tile.BaseTileIncome;
                 value += additionalModifier;
-            }
-            else {
+            } else {
                 value = (int)CurrentSeasonData.directFoodModifier;
             }
             return value;
