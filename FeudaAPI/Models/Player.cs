@@ -28,8 +28,8 @@ namespace FeudaAPI.Models
         public string ConnectionID { get; }
         public string PlayerName { get; }
 
-        public List<GameEvent> upcomingPlayerEvents { get; } = new();
-        public List<GameEvent> activePlayerEvents { get; } = new();
+        public List<GenericEvent> upcomingPlayerEvents { get; } = new();
+        public List<GenericEvent> activePlayerEvents { get; } = new();
         public int incomingEventAwareness { get; set; } = 20;
         public int currentScore { get; set; }
 
@@ -37,7 +37,7 @@ namespace FeudaAPI.Models
         {
             if (activePlayerEvents.Count > 0)
             {
-                foreach (GameEvent ev in upcomingPlayerEvents)
+                foreach (GenericEvent ev in upcomingPlayerEvents)
                 {
                     if (ev.takesEffectInTurns == 0)
                     {
@@ -53,7 +53,7 @@ namespace FeudaAPI.Models
             }
 
             if (activePlayerEvents.Count > 0) { 
-                foreach (GameEvent ev in activePlayerEvents)
+                foreach (GenericEvent ev in activePlayerEvents)
                 {
                     if (ev.turnsAffected == 0)
                     {

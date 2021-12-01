@@ -25,8 +25,8 @@ namespace FeudaAPI.Models
         public Board playerBoard;
         public Seasons currentSeason;
         public int turnCount;
-        public List<GameEvent> seeableEventsForPlayer;
-        public List<GameEvent> eventsInEffect;
+        public List<GenericEvent> seeableEventsForPlayer;
+        public List<GenericEvent> eventsInEffect;
 
         public TurnDataObject(Player player, Game game)
         {
@@ -49,9 +49,9 @@ namespace FeudaAPI.Models
             currentSeason = game.CurrentSeason;
             turnCount = game.TurnCount;
 
-            seeableEventsForPlayer = (List<GameEvent>)game.upcomingGameEvents.Concat(player.upcomingPlayerEvents).
+            seeableEventsForPlayer = (List<GenericEvent>)game.upcomingGameEvents.Concat(player.upcomingPlayerEvents).
                 Where(ev => ev.takesEffectInTurns <= player.incomingEventAwareness);
-            eventsInEffect = (List<GameEvent>)game.activeGameEvents.Concat(player.activePlayerEvents);
+            eventsInEffect = (List<GenericEvent>)game.activeGameEvents.Concat(player.activePlayerEvents);
 
             //Include boards of allies
             //Include boards of players that have died

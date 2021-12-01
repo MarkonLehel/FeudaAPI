@@ -11,14 +11,13 @@ namespace FeudaAPI.Models
 
 
         public bool IsRunning { get; set; } = false;
-        private int _tick = 0;
         
         public Seasons CurrentSeason { get; set; } = Seasons.Summer;
         private SeasonData CurrentSeasonData { get; set; } = Data.SeasonTypeConv[Seasons.Summer];
         public int TurnCount { get; set; } = 1;
 
-        public List<GameEvent> upcomingGameEvents { get; } = new();
-        public List<GameEvent> activeGameEvents { get; } = new();
+        public List<GenericEvent> upcomingGameEvents { get; } = new();
+        public List<GenericEvent> activeGameEvents { get; } = new();
 
 
         public Dictionary<string, TurnDataObject> CalculateTurn(List<Player> playerList)
@@ -88,7 +87,7 @@ namespace FeudaAPI.Models
         {
             if (upcomingGameEvents.Count > 0)
             {
-                foreach (GameEvent ev in upcomingGameEvents)
+                foreach (GenericEvent ev in upcomingGameEvents)
                 {
                     if (ev.takesEffectInTurns == 0)
                     {
@@ -105,7 +104,7 @@ namespace FeudaAPI.Models
 
             if (activeGameEvents.Count > 0) 
             { 
-                foreach (GameEvent ev in activeGameEvents)
+                foreach (GenericEvent ev in activeGameEvents)
                 {
                     if (ev.turnsAffected == 0)
                     {
@@ -179,11 +178,11 @@ namespace FeudaAPI.Models
             }
 
             //Posibility to add events that are season specific here
-            List<GameEvent> totalActiveEventsForPlayer = new();
+            List<GenericEvent> totalActiveEventsForPlayer = new();
             totalActiveEventsForPlayer.AddRange(activeGameEvents);
             totalActiveEventsForPlayer.AddRange(player.activePlayerEvents);
             if (activeGameEvents.Count > 0) {
-                foreach (GameEvent ev in totalActiveEventsForPlayer)
+                foreach (GenericEvent ev in totalActiveEventsForPlayer)
                 {
                     _foodIncome = ev.EffectFoodIncome(_foodIncome);
                     _woodIncome = ev.EffectWoodIncome(_woodIncome);
