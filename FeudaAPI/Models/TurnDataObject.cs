@@ -1,5 +1,5 @@
 ﻿using FeudaAPI.GameEvents;
-using FeudaAPI.Models.DataHolder;
+using FeudaAPI.Models.Data;
 using System.Collections.Generic;
 using System.Linq;
 

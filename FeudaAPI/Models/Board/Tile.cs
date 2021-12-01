@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FeudaAPI.Models;
-using FeudaAPI.Models.DataHolder;
+using FeudaAPI.Models.Data;
 
 namespace FeudaAPI.Models
 {

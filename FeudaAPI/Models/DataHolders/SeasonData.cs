@@ -1,4 +1,4 @@
-﻿namespace FeudaAPI.GameEvents
+﻿namespace FeudaAPI.Models.Data
 {
     public class SeasonData
     {

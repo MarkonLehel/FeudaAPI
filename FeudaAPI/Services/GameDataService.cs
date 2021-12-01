@@ -87,7 +87,7 @@ namespace FeudaAPI.Services
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Player player = lobby.GetPlayerByConnectionID(clientID);
-            return lobby.Game.BuildBuilding(player, Models.DataHolder.Data.BuildingTypeConv[building], cords);
+            return lobby.Game.BuildBuilding(player, Models.Data.Data.BuildingTypeConv[building], cords);
         }
 
         public bool MoveSerf(string lobbyIdentifier, string clientID, Coordinate from, Coordinate to)

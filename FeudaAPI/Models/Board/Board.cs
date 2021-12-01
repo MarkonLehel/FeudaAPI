@@ -1,4 +1,4 @@
-﻿using FeudaAPI.Models.DataHolder;
+﻿using FeudaAPI.Models.Data;
 using System.Collections.Generic;
 
 namespace FeudaAPI.Models
@@ -53,7 +53,7 @@ namespace FeudaAPI.Models
             BoardTiles[2, 2] = new Tile(new Coordinate(2, 2), TileType.Town);
             Tile townTile = GetTile(2, 2);
             townTile.BaseTileIncome = 0;
-            townTile.Building = Data.GetBuildingDataForType(BuildingType.Town);
+            townTile.Building = Data.Data.GetBuildingDataForType(BuildingType.Town);
             townTile.HasBuilding = true;
             TilesWithSerfs.Add(townTile);
 
@@ -81,7 +81,7 @@ namespace FeudaAPI.Models
                     {
                         if (tile.TileType == null)
                         {
-                            tile.TileType = validTiles[Data.random.Next(validTiles.Count)];
+                            tile.TileType = validTiles[Data.Data.random.Next(validTiles.Count)];
                             _gotAvailableType = true;
                         }
                     }

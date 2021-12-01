@@ -1,5 +1,5 @@
 ﻿using FeudaAPI.GameEvents;
-using FeudaAPI.Models.DataHolder;
+using FeudaAPI.Models.Data;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +13,7 @@ namespace FeudaAPI.Models
         public bool IsRunning { get; set; } = false;
         
         public Seasons CurrentSeason { get; set; } = Seasons.Summer;
-        private SeasonData CurrentSeasonData { get; set; } = Data.SeasonTypeConv[Seasons.Summer];
+        private SeasonData CurrentSeasonData { get; set; } = Data.Data.SeasonTypeConv[Seasons.Summer];
         public int TurnCount { get; set; } = 1;
 
         public List<GenericEvent> upcomingGameEvents { get; } = new();
@@ -79,7 +79,7 @@ namespace FeudaAPI.Models
             {
                 CurrentSeason = 0;
             }
-            CurrentSeasonData = Data.SeasonTypeConv[CurrentSeason];
+            CurrentSeasonData = Data.Data.SeasonTypeConv[CurrentSeason];
         }
         #endregion
 
@@ -119,7 +119,7 @@ namespace FeudaAPI.Models
         }
         private void KillRandomSerf(Player player)
         {
-            Tile serfTile = player.PlayerBoard.TilesWithSerfs[DataHolder.Data.random.Next(player.PlayerBoard.TilesWithSerfs.Count)];
+            Tile serfTile = player.PlayerBoard.TilesWithSerfs[Data.Data.random.Next(player.PlayerBoard.TilesWithSerfs.Count)];
             serfTile.HasSerf = false;
         }
         private void SpawnRandomSerf(Player player)
@@ -135,7 +135,7 @@ namespace FeudaAPI.Models
                         validSpawns.Add(tile);
                 }
             }
-            validSpawns[DataHolder.Data.random.Next(validSpawns.Count)].HasSerf = true;
+            validSpawns[Data.Data.random.Next(validSpawns.Count)].HasSerf = true;
         }
 
         #region Calculations
