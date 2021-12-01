@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FeudaAPI.Models;
 
-namespace FeudaAPI.Models
+namespace FeudaAPI.GameEvents
 {
     public abstract class GameEvent
     {
@@ -20,9 +17,23 @@ namespace FeudaAPI.Models
             this.takesEffectInTurns = takesEffectInTurns;
         }
 
-        public abstract void takeEffectOnGame();
-        
-        
+        public virtual void triggerEffectsOnGame() { }
 
+        #region EventResourceEffects
+        public virtual int EffectFoodIncome(int currentFoodIncome)
+        {
+            return currentFoodIncome;
+        }
+
+        public virtual int EffectWoodIncome(int currentWoodIncome)
+        {
+            return currentWoodIncome;
+        }
+
+        public virtual int EffectOreIncome(int currentOreIncome)
+        {
+            return currentOreIncome;
+        }
+        #endregion
     }
 }

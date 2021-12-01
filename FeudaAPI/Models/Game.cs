@@ -1,8 +1,7 @@
-﻿using FeudaAPI.Models.DataHolder;
+﻿using FeudaAPI.GameEvents;
+using FeudaAPI.Models.DataHolder;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FeudaAPI.Models
 {
@@ -164,11 +163,19 @@ namespace FeudaAPI.Models
                     }
                 }
             }
-            //Apply GameEventModifiers here
-            player.FoodCount += _foodIncome;
-            player.WoodCount += _woodIncome;
-            player.OreCount += _oreIncome;
 
+            //Apply GameEventModifiers for resources
+            if(activeGameEvents.Count > 0) {
+                foreach (GameEvent ev in activeGameEvents)
+                {
+                    _foodIncome = ev.EffectFoodIncome(_foodIncome);
+                    _woodIncome = ev.EffectWoodIncome(_woodIncome);
+                    _oreIncome = ev.EffectOreIncome(_oreIncome);
+                }
+            } 
+                player.FoodCount += _foodIncome;
+                player.WoodCount += _woodIncome;
+                player.OreCount += _oreIncome;
         }
 
         private int CalculateResourceIncome(Tile tile, int additionalModifier, int? directModifier)
