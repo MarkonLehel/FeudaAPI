@@ -17,7 +17,8 @@ namespace FeudaAPI.GameEvents
             this.takesEffectInTurns = takesEffectInTurns;
         }
 
-        public virtual void triggerEffectsOnGame() { }
+        public virtual void TriggerEffectsOnStart() { }
+        public virtual void TriggerEffectsPerTurn() { }
 
         #region EventResourceEffects
         public virtual int EffectFoodIncome(int currentFoodIncome)

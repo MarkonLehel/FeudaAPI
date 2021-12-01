@@ -88,6 +88,7 @@ namespace FeudaAPI.Models
                 }
                 else
                 {
+                    ev.TriggerEffectsPerTurn();
                     ev.turnsAffected--;
                 }
             }
@@ -96,6 +97,7 @@ namespace FeudaAPI.Models
             {
                 if (ev.takesEffectInTurns == 0)
                 {
+                    ev.TriggerEffectsOnStart();
                     activeGameEvents.Add(ev);
                 }
                 else
