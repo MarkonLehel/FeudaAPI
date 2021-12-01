@@ -23,6 +23,13 @@ namespace FeudaAPI.Models.DataHolder
         Town
     }
 
+    public enum Seasons
+    {
+        Summer = 0,
+        Fall = 1,
+        Winter = 2,
+        Spring = 3
+    }
     
 
     public static class Data
@@ -38,12 +45,27 @@ namespace FeudaAPI.Models.DataHolder
             new Building(BuildingType.Town, TileType.Field, 0, 0, false),
         };
 
+        public static List<SeasonData> SeasonList = new()
+        {
+            new SeasonData(0,null,-1,0,null,0,0,null,0),
+            new SeasonData(0, 1, -1, 0, null, -3, 0, null, 0)
+        };
+
+
         public static Dictionary<string, Building> BuildingTypeConv = new Dictionary<string, Building>()
         {
             {"house", GetBuildingDataForType(BuildingType.House) },
             {"woodcutter", GetBuildingDataForType(BuildingType.Woodcutter) },
             {"mine", GetBuildingDataForType(BuildingType.Mine) },
             {"farm", GetBuildingDataForType(BuildingType.Farm) },
+        };
+
+        public static Dictionary<Seasons, SeasonData> SeasonTypeConv = new Dictionary<Seasons, SeasonData>()
+        {
+            {Seasons.Summer, SeasonList[0] },
+            {Seasons.Fall, SeasonList[0] },
+            {Seasons.Winter, SeasonList[1] },
+            {Seasons.Spring, SeasonList[0] }
         };
 
         public static Building GetBuildingDataForType(BuildingType type)
