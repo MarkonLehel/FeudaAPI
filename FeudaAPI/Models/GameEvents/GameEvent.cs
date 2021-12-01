@@ -5,16 +5,19 @@ namespace FeudaAPI.GameEvents
     public abstract class GameEvent
     {
 
-
+        //Adding an allowedInSeason is possible, allowing for events to be only effective in specific seasons
         public int? turnsAffected;
         public int takesEffectInTurns;
         public Game game;
 
-        protected GameEvent(Game game, int? turnsAffected, int takesEffectInTurns)
+        public string description = "";
+
+        protected GameEvent(Game game, int? turnsAffected, int takesEffectInTurns, string description)
         {
             this.game = game;
             this.turnsAffected = turnsAffected;
             this.takesEffectInTurns = takesEffectInTurns;
+            this.description = description;
         }
 
         public virtual void TriggerEffectsOnStart() { }

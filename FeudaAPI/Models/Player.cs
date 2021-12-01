@@ -11,8 +11,8 @@ namespace FeudaAPI.Models
             PlayerName = name;
             PlayerBoard = new Board();
         }
-
-        public bool IsAlive { get; set; } = true;
+        public int? SurvivedUntilTurn { get; set; } = null;
+        public bool IsAlive { get; set; }
 
         public int WoodIncomeLastTurn { get; set; }
         public int FoodIncomeLastTurn { get; set; }
@@ -22,6 +22,7 @@ namespace FeudaAPI.Models
         public int FoodCount { get; set; } = 40;
         public int OreCount { get; set; } = 80;
         public int SerfCount { get; set; } = 1;
+        public int NumberOfBuildings { get; set; } = 0;
 
         public Board PlayerBoard { get; set; }
         public string ConnectionID { get; }
@@ -30,6 +31,7 @@ namespace FeudaAPI.Models
         public List<GameEvent> upcomingPlayerEvents { get; } = new();
         public List<GameEvent> activePlayerEvents { get; } = new();
         public int incomingEventAwareness { get; set; } = 20;
+        public int currentScore { get; set; }
 
         public void AdvancePlayerEvents()
         {

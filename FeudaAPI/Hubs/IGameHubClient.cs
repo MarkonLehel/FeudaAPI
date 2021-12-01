@@ -14,7 +14,7 @@ namespace FeudaAPI.Hubs
         Task getTurnGameData(TurnDataObject turnData);
 
         Task initGame();
-
+        Task playerDefeated();
         Task endGame();
     }
     

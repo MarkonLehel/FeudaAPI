@@ -94,7 +94,7 @@ namespace FeudaAPI.Services
         {
             Lobby lobby = lobbyDict[lobbyIdentifier];
             Player player = lobby.GetPlayerByConnectionID(clientID);
-            return player.PlayerBoard.MoveSerf(from, to);
+            return lobby.Game.MoveSerf(player, from, to);
         }
         #endregion
     }
