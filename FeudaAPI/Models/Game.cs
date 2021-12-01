@@ -144,33 +144,21 @@ namespace FeudaAPI.Models
                         switch (tile.TileType)
                         {
                             case TileType.Mountain:
-                                if(CurrentSeasonData.directOreModifier == null) { 
-                                _oreIncome += tile.HasImprovement ?
-                                    (tile.BaseTileIncome * 2) + CurrentSeasonData.additionalOreIncomeModifier
-                                    : tile.BaseTileIncome;
-                                } else {
-                                    _oreIncome = (int)CurrentSeasonData.directOreModifier;
-                                }
+                                _oreIncome += CalculateResourceIncome(tile,
+                                    CurrentSeasonData.additionalOreIncomeModifier,
+                                    CurrentSeasonData.directOreModifier);
                                 break;
 
                             case TileType.Forest:
-                                if(CurrentSeasonData.directWoodModifier == null) { 
-                                _woodIncome += tile.HasImprovement ?
-                                    (tile.BaseTileIncome * 2) + CurrentSeasonData.additionalWoodIncomeModifier
-                                    : tile.BaseTileIncome;
-                                } else {
-                                    _woodIncome = (int)CurrentSeasonData.directWoodModifier;
-                                }
+                                _woodIncome += CalculateResourceIncome(tile,
+                                    CurrentSeasonData.additionalWoodIncomeModifier,
+                                    CurrentSeasonData.directWoodModifier);
                                 break;
 
                             case TileType.Field:
-                                if(CurrentSeasonData.directFoodModifier == null) { 
-                                _foodIncome += tile.HasImprovement ?
-                                    (tile.BaseTileIncome * 2) + CurrentSeasonData.additionalFoodIncomeModifier
-                                    : tile.BaseTileIncome;
-                                } else {
-                                    _foodIncome = (int)CurrentSeasonData.directFoodModifier;
-                                }
+                                _foodIncome += CalculateResourceIncome(tile,
+                                      CurrentSeasonData.additionalFoodIncomeModifier,
+                                      CurrentSeasonData.directFoodModifier);
                                 break;
                         }
                     }
@@ -181,6 +169,20 @@ namespace FeudaAPI.Models
             player.WoodCount += _woodIncome;
             player.OreCount += _oreIncome;
 
+        }
+
+        private int CalculateResourceIncome(Tile tile, int additionalModifier, int? directModifier)
+        {
+            int value = 0;
+            if (directModifier == null)
+            {
+                value += tile.HasImprovement ? (tile.BaseTileIncome * 2) : tile.BaseTileIncome;
+                value += additionalModifier;
+            }
+            else {
+                value = (int)CurrentSeasonData.directFoodModifier;
+            }
+            return value;
         }
     }
 }
