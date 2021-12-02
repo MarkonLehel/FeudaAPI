@@ -30,6 +30,16 @@ namespace FeudaAPI.Models.Data
         Winter = 2,
         Spring = 3
     }
+
+    public enum EventType
+    {
+        SeasonChange,
+        Trade,
+        Raid,
+        Fire,
+        Drought,
+        Plague
+    }
     
 
     public static class Data

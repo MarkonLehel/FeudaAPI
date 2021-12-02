@@ -1,6 +1,6 @@
-﻿using FeudaAPI.Models;
+﻿using FeudaAPI.Models.Data;
 
-namespace FeudaAPI.GameEvents
+namespace FeudaAPI.Models.GameEvents
 {
     public abstract class GenericEvent
     {
@@ -8,11 +8,13 @@ namespace FeudaAPI.GameEvents
         //Adding an allowedInSeason is possible, allowing for events to be only effective in specific seasons
         public int? turnsAffected;
         public int takesEffectInTurns;
+        public EventType eventType;
 
         public string description = "";
 
-        protected GenericEvent(int? turnsAffected, int takesEffectInTurns, string description)
+        protected GenericEvent(int? turnsAffected, int takesEffectInTurns, string description, EventType eventType)
         {
+            this.eventType = eventType;
             this.turnsAffected = turnsAffected;
             this.takesEffectInTurns = takesEffectInTurns;
             this.description = description;
