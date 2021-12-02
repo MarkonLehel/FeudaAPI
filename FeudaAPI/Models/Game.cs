@@ -8,7 +8,8 @@ namespace FeudaAPI.Models
     public class Game
     {
         public bool IsRunning { get; set; } = false;
-        
+
+        public DateTime? lastUpdateInterval { get; set; }
         public Seasons CurrentSeason { get; set; } = Seasons.Summer;
         private SeasonData CurrentSeasonData { get; set; } = Data.Data.SeasonTypeConv[Seasons.Summer];
         public int TurnCount { get; set; } = 1;

@@ -31,6 +31,29 @@ namespace FeudaAPI.Services
             await Task.Yield();
             while (!stoppingToken.IsCancellationRequested)
             {
+
+                foreach (Lobby lobby in _gameDataService.activeGames)
+                {
+                    Game game = lobby.Game;
+                    if (game.IsRunning && (game.lastUpdateInterval == null ||
+                        ((DateTime)game.lastUpdateInterval - DateTime.UtcNow).TotalSeconds < -2) )
+                    {
+                        if(game.TurnCount >= 1000)
+                        {
+                            await _gameHub.Clients.Group(lobby.LobbyIdentifier).endGame();
+                            _gameDataService.RemoveLobby(lobby.LobbyIdentifier, lobby.HostConnectionID);
+                        }
+
+                        game.lastUpdateInterval = DateTime.UtcNow;
+                        Dictionary<string, TurnDataObject> gameTurnData = game.CalculateTurn(lobby.ConnectedPlayers);
+                        foreach (KeyValuePair<string,TurnDataObject> keyValuePair in gameTurnData)
+                        {
+                            await _gameHub.Clients.Client(keyValuePair.Key).getTurnGameData(keyValuePair.Value);
+                        }
+                    }
+                }
+
+
                 TimeSpan duration = lastWrite - DateTime.UtcNow;
                 if (duration.TotalSeconds < -1)
                 {
