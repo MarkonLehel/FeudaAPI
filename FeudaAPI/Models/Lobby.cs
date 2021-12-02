@@ -1,55 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FeudaAPI.Models
 {
     public class Lobby
     {
-
-        public string HostConnectionID { get; }
-        public string LobbyIdentifier { get; }
-        public string GameName { get; }
-
-        public List<Player> connectedPlayers { get; }
-
-        public List<Message> lobbyMessages { get; } = new();
-
-        
-
-        public Game Game { get; }
-
-        public Lobby(string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
+        public Lobby( string hostConnectionID, string lobbyIdentifier, string gameName, string hostName)
         {
             HostConnectionID = hostConnectionID;
             LobbyIdentifier = lobbyIdentifier;
             GameName = gameName;
-            connectedPlayers.Add(new Player(hostConnectionID, hostName));
+            ConnectedPlayers.Add(new Player(hostConnectionID, hostName));
         }
 
+        public string HostConnectionID { get; }
+        public string LobbyIdentifier { get; }
+        public string GameName { get; }
+        public List<Player> ConnectedPlayers { get; } = new();
+        public List<Message> LobbyMessages { get; } = new();
+        public List<Message> GameMessages { get; } = new();
+        public List<string> KicketClientIDs { get; set; } = new();
+        public Game Game { get; } = new Game();
 
-
-
+        #region Messages
         public void AddLobbyMessage(Message message)
         {
-            lobbyMessages.Add(message);
+            LobbyMessages.Add(message);
         }
+        public void AddGameMessage(Message message)
+        {
+            GameMessages.Add(message);
+        }
+        #endregion
 
         #region Player
         public void AddPlayer(string connectionID, string playerName)
         {
-            connectedPlayers.Add(new Player(connectionID, playerName));
+            ConnectedPlayers.Add(new Player(connectionID, playerName));
+        }
+
+        public void AddToKickList(string connectionID)
+        {
+            if (!KicketClientIDs.Contains(connectionID))
+                KicketClientIDs.Add(connectionID);
         }
 
         public void RemovePlayer(string connectionID)
         {
-            connectedPlayers.Remove(connectedPlayers.Where(p => p.ConnectionID == connectionID).First());
+            ConnectedPlayers.Remove(ConnectedPlayers.Where(p => p.ConnectionID == connectionID).First());
         }
 
         public bool IsPlayerConnected(string connectionID)
         {
-            foreach (Player player in connectedPlayers)
+            foreach (Player player in ConnectedPlayers)
             {
                 if (player.ConnectionID == connectionID)
                     return true;
@@ -59,7 +62,16 @@ namespace FeudaAPI.Models
 
         public Player GetPlayerByConnectionID(string connectionID)
         {
-            return connectedPlayers.Where(p => p.ConnectionID == connectionID).First();
+            return ConnectedPlayers.Where(p => p.ConnectionID == connectionID).First();
+        }
+        public Player GetPlayerByName(string name)
+        {
+            return ConnectedPlayers.Where(p => p.PlayerName == name).First();
+        }
+
+        public bool IsHost(string connectionID)
+        {
+            return HostConnectionID == connectionID;
         }
         #endregion
     }

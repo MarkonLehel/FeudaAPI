@@ -1,4 +1,5 @@
 using FeudaAPI.Hubs;
+using FeudaAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,9 @@ namespace FeudaAPI
 
             services.AddCors();
             services.AddControllers().AddXmlSerializerFormatters();
+            services.AddHostedService<GameService>();
+            services.AddSingleton<GameDataService>();
+            //TODO: A singleton data storage class service needs to be added here
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +68,7 @@ namespace FeudaAPI
             {
                 endpoints.MapRazorPages().RequireCors(MyAllowSpecificOrigins);
                 endpoints.MapHub<TestHub>("/testhub").RequireCors(MyAllowSpecificOrigins);
+                endpoints.MapHub<GameHub>("/gamehub").RequireCors(MyAllowSpecificOrigins);
             });
             //Changes all outgoing HTTP requests into HTTPS requests
             app.UseHttpsRedirection();
