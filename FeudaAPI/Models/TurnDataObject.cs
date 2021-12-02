@@ -1,5 +1,5 @@
-﻿using FeudaAPI.GameEvents;
-using FeudaAPI.Models.Data;
+﻿using FeudaAPI.Models.Data;
+using FeudaAPI.Models.GameEvents;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -49,9 +49,17 @@ namespace FeudaAPI.Models
             currentSeason = game.CurrentSeason;
             turnCount = game.TurnCount;
 
-            seeableEventsForPlayer = (List<GenericEvent>)game.upcomingGameEvents.Concat(player.upcomingPlayerEvents).
-                Where(ev => ev.takesEffectInTurns <= player.incomingEventAwareness);
-            eventsInEffect = (List<GenericEvent>)game.activeGameEvents.Concat(player.activePlayerEvents);
+            seeableEventsForPlayer = new();
+            seeableEventsForPlayer.AddRange(game.upcomingGameEvents
+                .Where(ev => ev.takesEffectInTurns <= player.incomingEventAwareness));
+            seeableEventsForPlayer.AddRange(player.upcomingPlayerEvents
+                .Where(ev => ev.takesEffectInTurns <= player.incomingEventAwareness));
+
+            eventsInEffect = new();
+            eventsInEffect.AddRange(game.activeGameEvents);
+            eventsInEffect.AddRange(player.activePlayerEvents);
+
+
 
             //Include boards of allies
             //Include boards of players that have died

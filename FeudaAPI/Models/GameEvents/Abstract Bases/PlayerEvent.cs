@@ -1,5 +1,4 @@
-﻿using FeudaAPI.GameEvents;
-using FeudaAPI.Models.Data;
+﻿using FeudaAPI.Models.Data;
 
 namespace FeudaAPI.Models.GameEvents
 {

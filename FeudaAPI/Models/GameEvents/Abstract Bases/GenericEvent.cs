@@ -1,7 +1,6 @@
-﻿
-using FeudaAPI.Models.Data;
+﻿using FeudaAPI.Models.Data;
 
-namespace FeudaAPI.GameEvents
+namespace FeudaAPI.Models.GameEvents
 {
     public abstract class GenericEvent
     {

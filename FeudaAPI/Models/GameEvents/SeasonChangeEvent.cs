@@ -1,4 +1,5 @@
-﻿namespace FeudaAPI.Models.GameEvents
+﻿
+namespace FeudaAPI.Models.GameEvents
 {
     public class SeasonChangeEvent : GameEvent
     {
