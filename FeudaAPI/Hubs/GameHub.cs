@@ -2,6 +2,7 @@
 using FeudaAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,14 +13,16 @@ namespace FeudaAPI.Hubs
     public class GameHub : Hub<IGameHubClient>
     {
         private GameDataService _gameDataService;
-        public GameHub( GameDataService gameDataService)
+        private readonly ILogger<GameDataService> _logger;
+        public GameHub(GameDataService gameDataService , ILogger<GameDataService> logger)
         {
+            _logger = logger;
             _gameDataService = gameDataService;
         }
 
         public override async Task OnConnectedAsync()
         {
-            Debug.WriteLine("-----------------------------Client connection.");
+            _logger.LogInformation($"User connected to server with connection ID {Context.ConnectionId}");
         }
 
         #region Lobby
@@ -28,12 +31,12 @@ namespace FeudaAPI.Hubs
         //TODO: Add logging to the entire class
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
-            Debug.WriteLine("-----------------------------Received a request to start the lobby");
+            _logger.LogInformation($"Received a request to start a lobby from user {hostName}({Context.ConnectionId}) with name {lobbyName}");
             try {
                 string lobbyIdentifier = _gameDataService.AddLobby(lobbyName, Context.ConnectionId, hostName);
-                Debug.WriteLine("A lobby was successfully created with the identifier of " + lobbyIdentifier);
+                _logger.LogInformation($"A lobby was successfully created with the identifier of {lobbyIdentifier} and name {lobbyName}");
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
-                Debug.WriteLine("Client was added to group.");
+                _logger.LogInformation($"{hostName}({Context.ConnectionId}) was added to group {lobbyIdentifier}");
                 return new JsonResult(lobbyIdentifier);
             } catch { 
             return new ConflictResult();
@@ -51,7 +54,7 @@ namespace FeudaAPI.Hubs
                 {
                     await Groups.RemoveFromGroupAsync(player.ConnectionID, lobbyIdentifier);
                 }
-
+                _logger.LogInformation($"Lobby {lobbyIdentifier} was closed by the host {Context.ConnectionId}");
                 return new OkResult();
             } else {
                 return new UnauthorizedResult();
@@ -68,11 +71,12 @@ namespace FeudaAPI.Hubs
                    !lobby.Game.IsRunning)
                 {
                     //Add client to group
+                    await SendUpdateToLobbyPlayers(lobbyIdentifier);
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
                     _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
-
+                    _logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
                     //Send update to clients
-                    await SendUpdateToLobbyPlayers(lobbyIdentifier);
+                    
 
                     return new OkResult();
                 }
@@ -89,7 +93,7 @@ namespace FeudaAPI.Hubs
                 //Remove client from lobby
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyIdentifier);
                 _gameDataService.RemovePlayerFromLobby(lobbyIdentifier, Context.ConnectionId);
-
+                _logger.LogInformation($"Player {lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName}({Context.ConnectionId} has left lobby {lobbyIdentifier})");
                 //Update info on other clients
                 await Clients.Group(lobbyIdentifier).updateLobbyPlayers(lobby.ConnectedPlayers);
             }
@@ -107,6 +111,7 @@ namespace FeudaAPI.Hubs
                 await Groups.RemoveFromGroupAsync(clientConnectionID, lobbyIdentifier);
 
                 //Remove the player
+                _logger.LogInformation($"The host just kicked {playerName}{lobby.GetPlayerByName(playerName).ConnectionID} from lobby {lobbyIdentifier}");
                 _gameDataService.KickPlayerFromLobby(lobbyIdentifier, playerName);
 
                 //Update data on other clients
@@ -122,12 +127,14 @@ namespace FeudaAPI.Hubs
         {
             Message msg = _gameDataService.AddMessageToLobby(lobbyIdentifier, Context.ConnectionId, message);
             await Clients.OthersInGroup(lobbyIdentifier).getNewMessage(msg);
+            _logger.LogInformation($"Lobby {lobbyIdentifier} just got a new message");
             return new OkResult();
         }
 
 
         public async Task<List<Message>> GetMessages(string lobbyIdentifier)
         {
+            _logger.LogInformation($"A client just asked for the messages for lobby {lobbyIdentifier}");
             return await Task.Run(() => { return _gameDataService.GetMessagesForLobby(lobbyIdentifier); });
         }
 
@@ -139,6 +146,7 @@ namespace FeudaAPI.Hubs
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
             if (lobby != null && lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning)
             {
+                _logger.LogInformation($"Game initialized for lobby {lobbyIdentifier}");
                 _gameDataService.StartGame(lobbyIdentifier);
                 await Clients.Group(lobbyIdentifier).initGame();
             }
@@ -148,6 +156,7 @@ namespace FeudaAPI.Hubs
         public async Task<IActionResult> MoveSerf(string lobbyIdentifier, int fromX, int fromY, int toX, int toY)
         {
             await Task.Yield();
+            _logger.LogInformation($"A serf was moved in lobby {lobbyIdentifier}");
             bool success = _gameDataService.MoveSerf(lobbyIdentifier, Context.ConnectionId, new Coordinate(fromX, fromY), new Coordinate(toX, toY));
             return success ? new OkResult() : new ConflictResult();
         }
@@ -155,7 +164,9 @@ namespace FeudaAPI.Hubs
         public async Task<IActionResult> BuildBuilding(string lobbyIdentifier, string building, int cordX, int cordY)
         {
             await Task.Yield();
+            _logger.LogInformation($"A {building}");
             bool success = _gameDataService.BuildBuilding(lobbyIdentifier, Context.ConnectionId, building, new Coordinate(cordX, cordY));
+            _logger.LogInformation($"A player tried to build a {building} in lobby {lobbyIdentifier}, he was {(success ? "succesfull" : "not succesfull")}");
             return success ? new OkResult() : new ConflictResult();
         }
 
