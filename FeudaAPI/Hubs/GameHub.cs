@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace FeudaAPI.Hubs
 {
@@ -23,6 +25,8 @@ namespace FeudaAPI.Hubs
         public override async Task OnConnectedAsync()
         {
             _logger.LogInformation($"User connected to server with connection ID {Context.ConnectionId}");
+            List<Lobby> lobbyList = _gameDataService.GetLobbiesWhereGameNotStarted();
+            await Clients.Client(Context.ConnectionId).getActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
         }
 
         #region Lobby

@@ -10,6 +10,19 @@ namespace FeudaAPI.Services
         public Dictionary<string, Lobby> lobbyDict { get; } = new();
         public List<string> lobbyNamesInUse { get; } = new();
 
+        public List<Lobby> GetLobbiesWhereGameNotStarted()
+        {
+            List<Lobby> lobbyList = new();
+            foreach (KeyValuePair<string, Lobby> kvp in lobbyDict)
+            {
+                if (!kvp.Value.Game.IsRunning)
+                {
+                    lobbyList.Add(kvp.Value);
+                }
+            }
+            return lobbyList;
+        }
+
         #region Lobby
         public Lobby GetLobby(string lobbyIdentifier)
         {
