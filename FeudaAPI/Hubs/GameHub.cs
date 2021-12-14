@@ -33,6 +33,8 @@ namespace FeudaAPI.Hubs
         //TODO: Use the identifier received from the URL instead of passing it as first parameter to most functions
         //TODO: In case of a lobby browser, implement OnConnectedAsync and OnDisconnectedAsync to send data to a lobby browser
         //TODO: Add logging to the entire class
+
+        //Fix lobby name matching
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
             _logger.LogInformation($"Received a request to start a lobby from user {hostName}({Context.ConnectionId}) with name {lobbyName}");
@@ -124,6 +126,9 @@ namespace FeudaAPI.Hubs
             }
             return new UnauthorizedResult();
         }
+
+        //Add method for getting active lobby list
+
         #endregion
 
         #region Messaging
@@ -178,6 +183,7 @@ namespace FeudaAPI.Hubs
 
         private async Task SendUpdateToLobbyPlayers(string lobbyIdentifier)
         {
+
             await Clients.Group(lobbyIdentifier).updateLobbyPlayers(_gameDataService.GetLobby(lobbyIdentifier).ConnectedPlayers);
         }
     }

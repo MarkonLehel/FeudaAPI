@@ -35,6 +35,7 @@ namespace FeudaAPI.Services
                 string lobbyIdentifier = Guid.NewGuid().ToString();
 
                 lobbyDict.Add(lobbyIdentifier, new Lobby(hostConnectionID, lobbyIdentifier, lobbyName, hostName));
+                lobbyNamesInUse.Add(lobbyName);
                 return lobbyIdentifier;
             } else {
                 throw new Exception("Lobby name already in use.");
