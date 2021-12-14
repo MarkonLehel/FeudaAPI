@@ -28,13 +28,15 @@ namespace FeudaAPI.Hubs
             List<Lobby> lobbyList = _gameDataService.GetLobbiesWhereGameNotStarted();
             await Clients.Client(Context.ConnectionId).getActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
         }
+        public async Task<List<LobbyListing>> GetActiveLobbyListing()
+        {
+            await Task.Yield();
+            return _gameDataService.GetLobbiesWhereGameNotStarted().ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb)));
+        }
 
         #region Lobby
         //TODO: Use the identifier received from the URL instead of passing it as first parameter to most functions
         //TODO: In case of a lobby browser, implement OnConnectedAsync and OnDisconnectedAsync to send data to a lobby browser
-        //TODO: Add logging to the entire class
-
-        //Fix lobby name matching
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
             _logger.LogInformation($"Received a request to start a lobby from user {hostName}({Context.ConnectionId}) with name {lobbyName}");
@@ -156,8 +158,9 @@ namespace FeudaAPI.Hubs
             if (lobby != null && lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning)
             {
                 _logger.LogInformation($"Game initialized for lobby {lobbyIdentifier}");
-                _gameDataService.StartGame(lobbyIdentifier);
                 await Clients.Group(lobbyIdentifier).initGame();
+                _gameDataService.StartGame(lobbyIdentifier);
+                
             }
 
         }
