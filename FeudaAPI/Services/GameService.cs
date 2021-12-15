@@ -40,7 +40,7 @@ namespace FeudaAPI.Services
                     {
                         if(game.TurnCount >= 1000)
                         {
-                            await _gameHub.Clients.Group(lobby.LobbyIdentifier).endGame();
+                            await _gameHub.Clients.Group(lobby.LobbyIdentifier).EndGame();
                             _gameDataService.RemoveLobby(lobby.LobbyIdentifier, lobby.HostConnectionID);
                         }
 
@@ -48,7 +48,7 @@ namespace FeudaAPI.Services
                         Dictionary<string, TurnDataObject> gameTurnData = game.CalculateTurn(lobby.ConnectedPlayers);
                         foreach (KeyValuePair<string,TurnDataObject> keyValuePair in gameTurnData)
                         {
-                            await _gameHub.Clients.Client(keyValuePair.Key).getTurnGameData(keyValuePair.Value);
+                            await _gameHub.Clients.Client(keyValuePair.Key).GetTurnGameData(keyValuePair.Value);
                         }
                     }
                 }

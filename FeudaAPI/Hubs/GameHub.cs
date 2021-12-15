@@ -26,7 +26,7 @@ namespace FeudaAPI.Hubs
         {
             _logger.LogInformation($"User connected to server with connection ID {Context.ConnectionId}");
             List<Lobby> lobbyList = _gameDataService.GetLobbiesWhereGameNotStarted();
-            await Clients.Client(Context.ConnectionId).getActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
+            await Clients.Client(Context.ConnectionId).GetActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
         }
         public async Task<List<LobbyListing>> GetActiveLobbyListing()
         {
@@ -103,7 +103,7 @@ namespace FeudaAPI.Hubs
                 _gameDataService.RemovePlayerFromLobby(lobbyIdentifier, Context.ConnectionId);
                 _logger.LogInformation($"Player {lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName}({Context.ConnectionId} has left lobby {lobbyIdentifier})");
                 //Update info on other clients
-                await Clients.Group(lobbyIdentifier).updateLobbyPlayers(lobby.ConnectedPlayers);
+                await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(lobby.ConnectedPlayers);
             }
         }
 
@@ -115,7 +115,7 @@ namespace FeudaAPI.Hubs
                 string clientConnectionID = lobby.GetPlayerByName(playerName).ConnectionID;
 
                 //Remove the client from the group and the server
-                await Clients.Client(clientConnectionID).disconnectFromGame("You have been kicked by the host!");
+                await Clients.Client(clientConnectionID).DisconnectFromGame("You have been kicked by the host!");
                 await Groups.RemoveFromGroupAsync(clientConnectionID, lobbyIdentifier);
 
                 //Remove the player
@@ -137,7 +137,7 @@ namespace FeudaAPI.Hubs
         public async Task<IActionResult> SendMessage(string lobbyIdentifier, string message)
         {
             Message msg = _gameDataService.AddMessageToLobby(lobbyIdentifier, Context.ConnectionId, message);
-            await Clients.OthersInGroup(lobbyIdentifier).getNewMessage(msg);
+            await Clients.OthersInGroup(lobbyIdentifier).GetNewMessage(msg);
             _logger.LogInformation($"Lobby {lobbyIdentifier} just got a new message");
             return new OkResult();
         }
@@ -158,7 +158,7 @@ namespace FeudaAPI.Hubs
             if (lobby != null && lobby.IsHost(Context.ConnectionId) && !lobby.Game.IsRunning)
             {
                 _logger.LogInformation($"Game initialized for lobby {lobbyIdentifier}");
-                await Clients.Group(lobbyIdentifier).initGame();
+                await Clients.Group(lobbyIdentifier).InitGame();
                 _gameDataService.StartGame(lobbyIdentifier);
                 
             }
@@ -187,7 +187,7 @@ namespace FeudaAPI.Hubs
         private async Task SendUpdateToLobbyPlayers(string lobbyIdentifier)
         {
 
-            await Clients.Group(lobbyIdentifier).updateLobbyPlayers(_gameDataService.GetLobby(lobbyIdentifier).ConnectedPlayers);
+            await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(_gameDataService.GetLobby(lobbyIdentifier).ConnectedPlayers);
         }
     }
 }
