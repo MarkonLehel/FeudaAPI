@@ -58,7 +58,7 @@ namespace FeudaAPI.Services
                 if (duration.TotalSeconds < -1)
                 {
                     lastWrite = DateTime.UtcNow;
-                    Debug.WriteLine("Running at " + DateTime.UtcNow + ", active lobbies:");
+                    //Debug.WriteLine("Running at " + DateTime.UtcNow + ", active lobbies:");
 
                     if (_gameDataService.lobbyDict.Count() > 0)
                     {

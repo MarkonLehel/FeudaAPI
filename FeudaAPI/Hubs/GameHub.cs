@@ -24,6 +24,7 @@ namespace FeudaAPI.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            Debug.WriteLine($"User connected:{Context.ConnectionId}");
             _logger.LogInformation($"User connected to server with connection ID {Context.ConnectionId}");
             List<Lobby> lobbyList = _gameDataService.GetLobbiesWhereGameNotStarted();
             await Clients.Client(Context.ConnectionId).GetActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
@@ -74,19 +75,21 @@ namespace FeudaAPI.Hubs
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
             if (lobby != null)
             {
-                if (!lobby.IsPlayerConnected(Context.ConnectionId) && 
-                   !lobby.KicketClientIDs.Contains(Context.ConnectionId) &&
-                   !lobby.Game.IsRunning)
-                {
-                    //Add client to group
-                    await SendUpdateToLobbyPlayers(lobbyIdentifier);
-                    await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
-                    _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
-                    _logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
-                    //Send update to clients
-                    
 
-                    return new OkResult();
+                if (!lobby.IsPlayerConnected(Context.ConnectionId)) { 
+                    if (!lobby.KicketClientIDs.Contains(Context.ConnectionId) &&
+                       !lobby.Game.IsRunning)
+                    {
+                        //Add client to group
+                        await SendUpdateToLobbyPlayers(lobbyIdentifier);
+                        await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
+                        _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
+                        _logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
+                        //Send update to clients
+
+                        return new OkResult();
+                    }
+                    return new UnauthorizedResult();
                 }
                 return new ConflictResult();
             }
