@@ -12,7 +12,7 @@ namespace FeudaAPI.Models
             PlayerBoard = new Board();
         }
         public int? SurvivedUntilTurn { get; set; } = null;
-        public bool IsAlive { get; set; }
+        public bool IsAlive { get; set; } = true;
 
         public int WoodIncomeLastTurn { get; set; }
         public int FoodIncomeLastTurn { get; set; }
@@ -35,7 +35,7 @@ namespace FeudaAPI.Models
 
         public void AdvancePlayerEvents()
         {
-            if (activePlayerEvents.Count > 0)
+            if (upcomingPlayerEvents.Count > 0)
             {
                 foreach (PlayerEvent ev in upcomingPlayerEvents)
                 {
