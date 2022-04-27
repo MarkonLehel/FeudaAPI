@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using FeudaAPI.Models.GameEvents;
 
 namespace FeudaAPI.Hubs
 {
@@ -84,7 +85,7 @@ namespace FeudaAPI.Hubs
                         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
                         _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
                         await SendUpdateToLobbyPlayersExcept(lobbyIdentifier, new List<string> { Context.ConnectionId });
-                        _logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
+                        //_logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
                         //Send update to clients
 
                         return new OkResult();
@@ -117,7 +118,7 @@ namespace FeudaAPI.Hubs
                     _gameDataService.RemovePlayerFromLobby(lobbyIdentifier, Context.ConnectionId);
                     //_logger.LogInformation($"Player {lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName}({Context.ConnectionId} has left lobby {lobbyIdentifier})");
                     //Update info on other clients
-                    await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(lobby.ConnectedPlayers);
+                   // await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(lobby.ConnectedPlayers);
                 }
             }
         }
@@ -202,16 +203,15 @@ namespace FeudaAPI.Hubs
         private async Task SendUpdateToLobbyPlayers(string lobbyIdentifier)
         {
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
-            var test = Clients.Group(lobbyIdentifier);
-
-            await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(lobby.ConnectedPlayers);
+            List<string> playerNames = lobby.ConnectedPlayers.Select(player => { return player.PlayerName; }).ToList();
+            await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(playerNames);
         }
 
         private async Task SendUpdateToLobbyPlayersExcept(string lobbyIdentifier, List<string> playerConnectionIdExcept)
         {
             Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
-            var test = Clients.Group(lobbyIdentifier).GetNewMessage(new Message("Testing","TEXTTEST"));
-            var test = Clients.GroupExcept(lobbyIdentifier, playerConnectionIdExcept).UpdateLobbyPlayers(lobby.ConnectedPlayers);
+            List<string> playerNames = lobby.ConnectedPlayers.Select(player => { return player.PlayerName; }).ToList();
+            await Clients.GroupExcept(lobbyIdentifier, playerConnectionIdExcept).UpdateLobbyPlayers(playerNames);
         }
     }
 }

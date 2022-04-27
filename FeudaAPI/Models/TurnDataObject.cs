@@ -22,7 +22,7 @@ namespace FeudaAPI.Models
         public int score;
         public int incomingEventAwareness;
 
-        public Board playerBoard;
+        public GameBoard playerBoard;
         public Seasons currentSeason;
         public int turnCount;
         public List<GenericEvent> seeableEventsForPlayer;

@@ -1,4 +1,5 @@
-﻿using FeudaAPI.Models.GameEvents;
+﻿using FeudaAPI.Models.Factories;
+using FeudaAPI.Models.GameEvents;
 using System.Collections.Generic;
 
 namespace FeudaAPI.Models
@@ -9,7 +10,6 @@ namespace FeudaAPI.Models
         {
             ConnectionID = connectionID;
             PlayerName = name;
-            PlayerBoard = new Board();
         }
         public int? SurvivedUntilTurn { get; set; } = null;
         public bool IsAlive { get; set; } = true;
@@ -24,7 +24,7 @@ namespace FeudaAPI.Models
         public int SerfCount { get; set; } = 1;
         public int NumberOfBuildings { get; set; } = 0;
 
-        public Board PlayerBoard { get; set; }
+        public GameBoard PlayerBoard { get; set; }
         public string ConnectionID { get; }
         public string PlayerName { get; }
 
@@ -32,40 +32,5 @@ namespace FeudaAPI.Models
         public List<PlayerEvent> activePlayerEvents { get; } = new();
         public int incomingEventAwareness { get; set; } = 20;
         public int currentScore { get; set; }
-
-        public void AdvancePlayerEvents()
-        {
-            if (upcomingPlayerEvents.Count > 0)
-            {
-                foreach (PlayerEvent ev in upcomingPlayerEvents)
-                {
-                    if (ev.takesEffectInTurns == 0)
-                    {
-                        ev.TriggerEffectsOnStart();
-                        activePlayerEvents.Add(ev);
-                        upcomingPlayerEvents.Remove(ev);
-                    }
-                    else
-                    {
-                        ev.takesEffectInTurns--;
-                    }
-                }
-            }
-
-            if (activePlayerEvents.Count > 0) { 
-                foreach (PlayerEvent ev in activePlayerEvents)
-                {
-                    if (ev.turnsAffected == 0)
-                    {
-                        activePlayerEvents.Remove(ev);
-                    }
-                    else
-                    {
-                        ev.TriggerEffectsPerTurn();
-                        ev.turnsAffected--;
-                    }
-                }
-            }
-        }
     }
 }

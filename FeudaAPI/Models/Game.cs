@@ -2,18 +2,17 @@
 using FeudaAPI.Models.Data;
 using System;
 using System.Collections.Generic;
+using FeudaAPI.Logic;
 
 namespace FeudaAPI.Models
 {
     public class Game
     {
         public bool IsRunning { get; set; } = false;
-
         public DateTime? lastUpdateInterval { get; set; }
         public Seasons CurrentSeason { get; set; } = Seasons.Summer;
         private SeasonData CurrentSeasonData { get; set; } = Data.Data.SeasonTypeConv[Seasons.Summer];
         public int TurnCount { get; set; } = 1;
-
         public List<GameEvent> upcomingGameEvents { get; } = new();
         public List<GameEvent> activeGameEvents { get; } = new();
 
@@ -40,9 +39,11 @@ namespace FeudaAPI.Models
 
             CalculatePlayerResources(player);
 
-            CheckPlayerStatus(player);
+            CalculatePlayerStatus(player);
 
             CalculatePlayerScore(player);
+
+            AdvancePlayerEvents(player);
 
             return new TurnDataObject();
         }
@@ -50,7 +51,7 @@ namespace FeudaAPI.Models
         #region Player actions
         public bool BuildBuilding(Player player, Building building, Coordinate pos)
         {
-            Tile tile = player.PlayerBoard.GetTile(pos);
+            Tile tile = BoardLogic.GetTile(pos, player.PlayerBoard);
             if (player.OreCount >= building.OrePrice && player.WoodCount >= building.WoodPrice && !tile.HasBuilding)
             {
                 player.OreCount -= building.OrePrice;
@@ -66,7 +67,15 @@ namespace FeudaAPI.Models
         }
         public bool MoveSerf(Player player, Coordinate from, Coordinate to)
         {
-            return player.PlayerBoard.MoveSerf(from, to);
+            Tile fromTile = BoardLogic.GetTile(from, player.PlayerBoard);
+            Tile toTile = BoardLogic.GetTile(to, player.PlayerBoard);
+            if (fromTile.HasSerf && !toTile.HasSerf)
+            {
+                fromTile.HasSerf = false;
+                toTile.HasSerf = true;
+                return true;
+            }
+            return false;
         }
         #endregion
         
@@ -135,9 +144,10 @@ namespace FeudaAPI.Models
             {
                 for (int y = 0; y < 5; y++)
                 {
-                    Tile tile = player.PlayerBoard.GetTile(x, y);
-                    if (tile.Building.BuildingType == BuildingType.House ||
-                        tile.Building.BuildingType == BuildingType.Town)
+                    Tile tile = BoardLogic.GetTile(x, y, player.PlayerBoard);
+                    if ((tile.Building.BuildingType == BuildingType.House ||
+                        tile.Building.BuildingType == BuildingType.Town) &&
+                        !tile.HasSerf)
                         validSpawns.Add(tile);
                 }
             }
@@ -151,12 +161,12 @@ namespace FeudaAPI.Models
             int _foodIncome = player.SerfCount * CurrentSeasonData.perSerfFoodModifier;
             int _oreIncome = 0;
 
-            Board board = player.PlayerBoard;
+            GameBoard board = player.PlayerBoard;
             for (int x = 0; x < 5; x++)
             {
                 for (int y = 0; y < 5; y++)
                 {
-                    Tile tile = board.GetTile(x, y);
+                    Tile tile = BoardLogic.GetTile(x, y, player.PlayerBoard);
                     if (tile.HasSerf)
                     {
                         switch (tile.TileType)
@@ -211,7 +221,7 @@ namespace FeudaAPI.Models
                 player.NumberOfBuildings * 5 +
                 player.SurvivedUntilTurn != null ? (int)player.SurvivedUntilTurn : 0;
         }
-        private void CheckPlayerStatus(Player player)
+        private void CalculatePlayerStatus(Player player)
         {
             if (player.SerfCount > 0 && player.FoodCount < 0)
             {
@@ -236,6 +246,42 @@ namespace FeudaAPI.Models
                 value = (int)CurrentSeasonData.directFoodModifier;
             }
             return value;
+        }
+
+        public void AdvancePlayerEvents(Player player)
+        {
+            if (player.upcomingPlayerEvents.Count > 0)
+            {
+                foreach (PlayerEvent ev in player.upcomingPlayerEvents)
+                {
+                    if (ev.takesEffectInTurns == 0)
+                    {
+                        ev.TriggerEffectsOnStart();
+                        player.activePlayerEvents.Add(ev);
+                        player.upcomingPlayerEvents.Remove(ev);
+                    }
+                    else
+                    {
+                        ev.takesEffectInTurns--;
+                    }
+                }
+            }
+
+            if (player.activePlayerEvents.Count > 0)
+            {
+                foreach (PlayerEvent ev in player.activePlayerEvents)
+                {
+                    if (ev.turnsAffected == 0)
+                    {
+                        player.activePlayerEvents.Remove(ev);
+                    }
+                    else
+                    {
+                        ev.TriggerEffectsPerTurn();
+                        ev.turnsAffected--;
+                    }
+                }
+            }
         }
         #endregion
     }
