@@ -12,7 +12,6 @@ using FeudaAPI.Models.GameEvents;
 
 namespace FeudaAPI.Hubs
 {
-    //TODO: This needs a singleton data storage class service to create a connection with the bgservice
     public class GameHub : Hub<IGameHubClient>
     {
         private GameDataService _gameDataService;
@@ -30,6 +29,13 @@ namespace FeudaAPI.Hubs
             List<Lobby> lobbyList = _gameDataService.GetLobbiesWhereGameNotStarted();
             await Clients.Client(Context.ConnectionId).GetActiveLobbyList(lobbyList.ConvertAll(new Converter<Lobby, LobbyListing>((lb) => new LobbyListing(lb))));
         }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            string _playerName = _gameDataService.GetPlayerNameByConnectionID(Context.ConnectionId);
+            _gameDataService.RemovePlayerNameFromUsed(_playerName);
+        }
+
         public async Task<List<LobbyListing>> GetActiveLobbyListing()
         {
             await Task.Yield();
@@ -37,7 +43,6 @@ namespace FeudaAPI.Hubs
         }
 
         #region Lobby
-        //TODO: Use the identifier received from the URL instead of passing it as first parameter to most functions
         //TODO: In case of a lobby browser, implement OnConnectedAsync and OnDisconnectedAsync to send data to a lobby browser
         public async Task<IActionResult> CreateLobby(string lobbyName, string hostName)
         {
@@ -50,6 +55,16 @@ namespace FeudaAPI.Hubs
                 return new JsonResult(lobbyIdentifier);
             } catch { 
             return new ConflictResult();
+            }
+        }
+
+        public async Task<IActionResult> CheckPlayerNameAvailability(string playerName)
+        {
+            try {
+                _gameDataService.ValidateAndAddPlayer(playerName, Context.ConnectionId);
+                return new OkResult();
+            } catch {
+                return new ConflictResult();
             }
         }
 
@@ -116,9 +131,8 @@ namespace FeudaAPI.Hubs
                     //Remove client from lobby
                     await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyIdentifier);
                     _gameDataService.RemovePlayerFromLobby(lobbyIdentifier, Context.ConnectionId);
-                    //_logger.LogInformation($"Player {lobby.GetPlayerByConnectionID(Context.ConnectionId).PlayerName}({Context.ConnectionId} has left lobby {lobbyIdentifier})");
-                    //Update info on other clients
-                   // await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(lobby.ConnectedPlayers);
+                    //Update listing on other clients
+                    await SendUpdateToLobbyPlayers(lobbyIdentifier);
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using FeudaAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FeudaAPI.Services
 {
@@ -9,6 +10,8 @@ namespace FeudaAPI.Services
         public List<Lobby> activeGames { get; } = new();
         public Dictionary<string, Lobby> lobbyDict { get; } = new();
         public List<string> lobbyNamesInUse { get; } = new();
+
+        public Dictionary<string,string> playerNamesInUse { get; } = new();
 
         public List<Lobby> GetLobbiesWhereGameNotStarted()
         {
@@ -29,6 +32,30 @@ namespace FeudaAPI.Services
             lobbyDict.TryGetValue(lobbyIdentifier, out Lobby lobby);
             return lobby;
         }
+
+        public bool ValidateAndAddPlayer(string playerName, string connectionID) {
+
+            if (!playerNamesInUse.Values.Where((name) => name.Equals(playerName)).Any())
+            {
+                playerNamesInUse.Add(connectionID, playerName);
+                return true;
+            } else {
+                throw new Exception("Player name already in use.");
+            }
+        }
+
+        public void RemovePlayerNameFromUsed (string playerName)
+        {
+            if (playerNamesInUse.ContainsKey(playerName)) { 
+                playerNamesInUse.Remove(playerName);
+            }
+        }
+
+        public string GetPlayerNameByConnectionID(string connectionID)
+        {
+            return playerNamesInUse[connectionID];
+        }
+
         public string AddLobby(string lobbyName, string hostConnectionID, string hostName) {
             if (!lobbyNamesInUse.Contains(lobbyName))
             {
