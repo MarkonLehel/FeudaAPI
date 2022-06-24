@@ -216,16 +216,14 @@ namespace FeudaAPI.Hubs
 
         private async Task SendUpdateToLobbyPlayers(string lobbyIdentifier)
         {
-            Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
-            List<string> playerNames = lobby.ConnectedPlayers.Select(player => { return player.PlayerName; }).ToList();
-            await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(playerNames);
+            List<LobbyPlayerData> playerData = _gameDataService.GetLobbyPlayersData(lobbyIdentifier);
+            await Clients.Group(lobbyIdentifier).UpdateLobbyPlayers(playerData);
         }
 
         private async Task SendUpdateToLobbyPlayersExcept(string lobbyIdentifier, List<string> playerConnectionIdExcept)
         {
-            Lobby lobby = _gameDataService.GetLobby(lobbyIdentifier);
-            List<string> playerNames = lobby.ConnectedPlayers.Select(player => { return player.PlayerName; }).ToList();
-            await Clients.GroupExcept(lobbyIdentifier, playerConnectionIdExcept).UpdateLobbyPlayers(playerNames);
+            List<LobbyPlayerData> playerData = _gameDataService.GetLobbyPlayersData(lobbyIdentifier);
+            await Clients.GroupExcept(lobbyIdentifier, playerConnectionIdExcept).UpdateLobbyPlayers(playerData);
         }
     }
 }

@@ -33,6 +33,17 @@ namespace FeudaAPI.Services
             return lobby;
         }
 
+        public List<LobbyPlayerData> GetLobbyPlayersData(string lobbyIdentifier)
+        {
+            Lobby lobby = GetLobby(lobbyIdentifier);
+            List<LobbyPlayerData> playerData = new List<LobbyPlayerData>();
+            foreach (Player player in lobby.ConnectedPlayers)
+            {
+                playerData.Add(new LobbyPlayerData (player.PlayerName, player.ConnectionID == lobby.HostConnectionID) );
+            }
+            return playerData;
+        }
+
         public bool ValidateAndAddPlayer(string playerName, string connectionID) {
 
             if (!playerNamesInUse.Values.Where((name) => name.Equals(playerName)).Any())

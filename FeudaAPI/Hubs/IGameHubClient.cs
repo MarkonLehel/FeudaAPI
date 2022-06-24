@@ -9,7 +9,7 @@ namespace FeudaAPI.Hubs
     public interface IGameHubClient
     {
         Task DisconnectFromGame(string message);
-        Task UpdateLobbyPlayers(List<string> playerNameList);
+        Task UpdateLobbyPlayers(List<LobbyPlayerData> playerDataList);
         Task GetNewMessage(Message msg);
         Task GetTurnGameData(TurnDataObject turnData);
         Task GetActiveLobbyList(List<LobbyListing> lobbyNames);
