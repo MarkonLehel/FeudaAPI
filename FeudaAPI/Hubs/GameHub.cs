@@ -99,7 +99,7 @@ namespace FeudaAPI.Hubs
                         //Add client to group
                         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyIdentifier);
                         _gameDataService.AddPlayerToLobby(lobbyIdentifier, Context.ConnectionId, playerName);
-                        await SendUpdateToLobbyPlayersExcept(lobbyIdentifier, new List<string> { Context.ConnectionId });
+                        await SendUpdateToLobbyPlayers(lobbyIdentifier);
                         //_logger.LogInformation($"Player {playerName}({Context.ConnectionId} has joined lobby {lobbyIdentifier})");
                         //Send update to clients
 
